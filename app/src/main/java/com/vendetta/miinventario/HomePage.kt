@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_home_page.*
 private lateinit var auth: FirebaseAuth
 private var database = ""
 private var isAdmin = false
+private var fullname=""
 
 
 
@@ -32,10 +33,27 @@ class HomePage : AppCompatActivity() {
         }
 
         addUser_btn.setOnClickListener{
-
+            //Intent(this, PantallaTest::class.java).apply { startActivity(this) }
             Intent(this, RegisterUsers::class.java).apply { startActivity(this) }
         }
 
+
+        //Botenes principales
+        //ventas
+        ventas_btn.setOnClickListener { Intent(this,VentasHome::class.java).apply { startActivity(this) } }
+        //productos
+        productos_btn.setOnClickListener { Intent(this,ProductosHome::class.java).apply { startActivity(this) } }
+        //finanzas
+        finanzas_btn.setOnClickListener {Intent(this,FinanzasHome::class.java).apply { startActivity(this) }}
+        //usuarios
+        usuarios_btn.setOnClickListener {Intent(this,UsuariosHome::class.java).apply { startActivity(this) }}
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadPreferences()
+        database_name.text = database.toString()
     }
 
     fun logout(){
@@ -56,6 +74,10 @@ class HomePage : AppCompatActivity() {
 
         getSharedPreferences("login_prefs",Context.MODE_PRIVATE).apply {
             isAdmin = this.getBoolean("isAdmin",false)
+        }
+
+        getSharedPreferences("login_prefs",Context.MODE_PRIVATE).apply {
+            fullname = this.getString("name","null").toString()
         }
     }
 

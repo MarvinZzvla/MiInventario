@@ -44,10 +44,13 @@ class RegisterUsers : AppCompatActivity() {
             var email = register_email.text.toString();var pass = register_password.text.toString();
             var phone = register_phone.text.toString();var isAdmin = register_isAdmin.isChecked
 
-           var u = auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
+            auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
                var uid = it.user?.uid.toString()
                 var db = Firebase.database.getReference("Usuarios").child(uid)
                 db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase))
+                //Registrar en su respectiva base de datos
+                var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
+                bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase))
                makeToast("Usuario registrado con exito")
             }
             Intent(this,HomePage::class.java).apply { startActivity(this) }

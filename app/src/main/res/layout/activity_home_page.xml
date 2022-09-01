@@ -8,16 +8,131 @@
 
     <Button
         android:id="@+id/btn_logout"
-        android:layout_width="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Salir"
+        android:text="Desconectarse"
         android:background="@drawable/bg_button"
-        app:layout_constraintVertical_bias="0.01"
-        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/database_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.1"
+        android:text="Mi inventario"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/ventas_btn"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_margin="15dp"
+        app:layout_constraintVertical_bias="0.05"
+        android:background="@drawable/bg_form"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/database_name" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="Ventas"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/ventas_btn"
+        app:layout_constraintEnd_toEndOf="@+id/ventas_btn"
+        app:layout_constraintStart_toStartOf="@+id/ventas_btn"
+        app:layout_constraintTop_toTopOf="@+id/ventas_btn" />
+
+
+    <ImageButton
+        android:id="@+id/productos_btn"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_margin="15dp"
+        app:layout_constraintVertical_bias="0.05"
+        android:background="@drawable/bg_form"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ventas_btn" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="Productos"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/productos_btn"
+        app:layout_constraintEnd_toEndOf="@+id/productos_btn"
+        app:layout_constraintStart_toStartOf="@+id/productos_btn"
+        app:layout_constraintTop_toTopOf="@+id/productos_btn" />
+    <ImageButton
+        android:id="@+id/finanzas_btn"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_margin="15dp"
+        app:layout_constraintVertical_bias="0.05"
+        android:background="@drawable/bg_form"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productos_btn" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="Finanzas"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/finanzas_btn"
+        app:layout_constraintEnd_toEndOf="@+id/finanzas_btn"
+        app:layout_constraintStart_toStartOf="@+id/finanzas_btn"
+        app:layout_constraintTop_toTopOf="@+id/finanzas_btn" />
+    <ImageButton
+        android:id="@+id/usuarios_btn"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_margin="15dp"
+        app:layout_constraintVertical_bias="0.05"
+        android:background="@drawable/bg_form"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finanzas_btn" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="Usuarios"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/usuarios_btn"
+        app:layout_constraintEnd_toEndOf="@+id/usuarios_btn"
+        app:layout_constraintStart_toStartOf="@+id/usuarios_btn"
+        app:layout_constraintTop_toTopOf="@+id/usuarios_btn" />
 
     <ImageButton
         android:id="@+id/addUser_btn"

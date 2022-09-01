@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         prefs.putBoolean("isLogin", true)
         prefs.putString("database", database.get("database").toString())
         prefs.putBoolean("isAdmin", database.get("admin") as Boolean)
+        prefs.putString("name", "${database.get("name").toString()} ${database.get("apellido").toString()}")
         prefs.apply()
         Intent(this,HomePage::class.java).apply { startActivity(this) }
 
