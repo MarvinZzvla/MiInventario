@@ -32,12 +32,11 @@ var daySelected = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 var monthSelected = Calendar.getInstance().get(Calendar.MONTH)+1
 @RequiresApi(Build.VERSION_CODES.N)
 var yearSelected = Calendar.getInstance().get(Calendar.YEAR)
-var list = arrayListOf<DataSnapshot>()
-var nameProducts = arrayListOf<String>()
-var precioProducts = arrayListOf<String>()
-var dateProducts = arrayListOf<String>()
-var ventasProviderList = arrayListOf<Ventas>()
-
+private var list = arrayListOf<DataSnapshot>()
+private var nameProducts = arrayListOf<String>()
+private var precioProducts = arrayListOf<String>()
+private var dateProducts = arrayListOf<String>()
+public var ventasProviderList = arrayListOf<Ventas>()
 
 class VentasHome : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)

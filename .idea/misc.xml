@@ -9,12 +9,14 @@
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_home_page.xml" value="0.22" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_nueva_venta.xml" value="0.25" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_nuevo_producto.xml" value="0.1675213675213675" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_pantalla_test.xml" value="0.11923076923076924" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_productos_home.xml" value="0.15598290598290598" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_register_users.xml" value="0.33" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_usuarios_home.xml" value="0.15598290598290598" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_ventas_home.xml" value="0.1675213675213675" />
-        <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/card_layout.xml" value="0.33" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/card_layout.xml" value="0.1" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/producto_card_layout.xml" value="0.5" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/spinner_style.xml" value="0.25" />
       </map>
     </option>

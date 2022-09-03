@@ -1,5 +1,6 @@
 package com.vendetta.miinventario
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -9,18 +10,18 @@ import android.text.Editable
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_nueva_venta.*
 import java.time.LocalDateTime
+import java.util.*
 
 
 class NuevaVenta : AppCompatActivity() {
     var database = ""
     var producto = ""
     var date = ""
+    private lateinit var myCalendar : Calendar
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,17 +37,38 @@ class NuevaVenta : AppCompatActivity() {
         super.onStart()
         loadPreferences()
         readData()
+        loadCalendar()
 
-         date = java.util.Calendar.getInstance().time.date.toString()+"/"+
-                (java.util.Calendar.getInstance().time.month + 1).toString()+"/"+
-                (java.util.Calendar.getInstance().time.year + 1900).toString()+" - "+
-                java.util.Calendar.getInstance().time.hours.toString()+":"+java.util.Calendar.getInstance().time.minutes.toString()+":"+
-                java.util.Calendar.getInstance().time.seconds.toString()
+        nuevaFecha_ventas.isFocusable = false
 
 
+    }
+    fun loadCalendar(){
+        myCalendar = Calendar.getInstance()
+        var datePicker = DatePickerDialog.OnDateSetListener { datePicker, year, month,dayOfMonth ->
+            myCalendar.set(Calendar.YEAR,year)
+            myCalendar.set(Calendar.MONTH, month)
+            myCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+
+            date = myCalendar.time.date.toString()+"/"+
+                    (myCalendar.time.month + 1).toString()+"/"+
+                    (myCalendar.time.year + 1900).toString()+" - "+
+                    Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()+":"+
+                    Calendar.getInstance().time.seconds.toString()
+
+            nuevaFecha_ventas.text = Editable.Factory.getInstance().newEditable(date)
+        }
+        nuevaFecha_ventas.setOnClickListener {
+            DatePickerDialog(this,datePicker,myCalendar.get(Calendar.YEAR),
+                myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        date = myCalendar.time.date.toString()+"/"+
+                (myCalendar.time.month + 1).toString()+"/"+
+                (myCalendar.time.year + 1900).toString()+" - "+
+                Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()+":"+
+                Calendar.getInstance().time.seconds.toString()
         nuevaFecha_ventas.text = Editable.Factory.getInstance().newEditable(date)
-
-
     }
 
     fun readData(){
@@ -65,7 +87,7 @@ class NuevaVenta : AppCompatActivity() {
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-                    
+
                 }
 
             }
@@ -90,12 +112,15 @@ class NuevaVenta : AppCompatActivity() {
 
     data class ventaData(val name:String,val date:String,val precio:Int)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun CrearBaseDatos(){
-        var dateToday = "${LocalDateTime.now().year}/${LocalDateTime.now().monthValue}/${LocalDateTime.now().dayOfMonth}"
-        var timeNow = "${LocalDateTime.now().hour.toString()}:${LocalDateTime.now().minute.toString()}:${LocalDateTime.now().second.toString()}"
+        //var dateToday = "${LocalDateTime.now().year}/${LocalDateTime.now().monthValue}/${LocalDateTime.now().dayOfMonth}"
+        var dateToday = "${myCalendar.time.year + + 1900}/${myCalendar.time.month + 1}/${myCalendar.time.date}"
+        //var timeNow = "${LocalDateTime.now().hour.toString()}:${LocalDateTime.now().minute.toString()}:${LocalDateTime.now().second.toString()}"
+        var timeNow = Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()+":"+
+                Calendar.getInstance().time.seconds.toString()
 
         if(checkFields()) {
+            //Si la venta se realizo
             Firebase.database.getReference(database).child("Ventas").child(dateToday).child(timeNow).setValue(
                 ventaData(
                     producto,
@@ -103,12 +128,42 @@ class NuevaVenta : AppCompatActivity() {
                     nuevoPrecio_ventas.text.toString().toInt()
                 )
             )
+            //Actualizar la cantidad actual de producto vendido
+            Firebase.database.getReference(database).child("Productos").child(producto).child("cantidad").get().addOnSuccessListener {
+                var count = it.value.toString().toInt()
+                count--
+                Firebase.database.getReference(database).child("Productos").child(producto).child("cantidad").setValue(count.toString())
+
+            }
+            updateFinanzas(dateToday,timeNow)
+
+
             Intent(this,VentasHome::class.java).apply { startActivity(this) }
         }
+        //Si la venta no se realizo
         else{
             Toast.makeText(this,"Verifique todos los campos esten completos",Toast.LENGTH_SHORT).show()
         }
         }
+
+    fun updateFinanzas(dateToday: String, timeNow: String) {
+        var countDay = 0; var countMonth = 0; var countYear = 0;
+        //Get ventas del dia
+        Firebase.database.getReference(database).child("Finanzas").child(dateToday)
+            .child("ventas").get().addOnSuccessListener {
+                if (!it.exists()){ countDay = nuevoPrecio_ventas.text.toString().toInt()}
+                else{
+                countDay = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()}
+                //Finanzas del dia - Set ventas del dia
+                Firebase.database.getReference(database).child("Finanzas").child(dateToday)
+                    .child("ventas").setValue(countDay.toString())
+
+            //Get Finanzas del mes
+                Firebase.database.getReference(database).child("Finanzas").child((Calendar.getInstance().time.month + 1).toString())
+            }
+
+
+    }
 
     override fun onBackPressed() {
         super.onBackPressed()
