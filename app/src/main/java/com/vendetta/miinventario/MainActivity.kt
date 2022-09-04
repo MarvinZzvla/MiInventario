@@ -30,9 +30,15 @@ class MainActivity : AppCompatActivity() {
         //Boton de login
         btn_login.setOnClickListener {
             //Se desactiva despues de dar un click
-            btn_login.isClickable = false
-            btn_login.isEnabled = false
+
             loginUser()
+        }
+
+        crearInventarioBtn.setOnClickListener {
+            Intent(this,RegisterUsers::class.java).apply {
+                putExtra("isFirst",true)
+                startActivity(this)
+            }
         }
 
 
@@ -93,11 +99,16 @@ class MainActivity : AppCompatActivity() {
     fun loginFirebase(){
         var email = login_email.text.toString()
         var pass = login_password.text.toString()
+        btn_login.isClickable = false
+        btn_login.isEnabled = false
         auth.signInWithEmailAndPassword(email,pass).addOnCompleteListener {
             if (it.isSuccessful){
+
                 getReference()
             }
             else{
+                btn_login.isClickable = true
+                btn_login.isEnabled = true
                 makeToast("Correo o contraseña invalidos")
             }
         }

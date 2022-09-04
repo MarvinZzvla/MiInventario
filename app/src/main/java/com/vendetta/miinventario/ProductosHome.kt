@@ -77,7 +77,7 @@ class ProductosHome : AppCompatActivity() {
     fun initRecycleView(){
         val recyclerView = recycleProductos
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = ProductosAdapter(productosProviderList)
+        recyclerView.adapter = ProductosAdapter(productosProviderList,database)
     }
 
 

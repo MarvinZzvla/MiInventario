@@ -116,8 +116,10 @@ class NuevaVenta : AppCompatActivity() {
         //var dateToday = "${LocalDateTime.now().year}/${LocalDateTime.now().monthValue}/${LocalDateTime.now().dayOfMonth}"
         var dateToday = "${myCalendar.time.year + + 1900}/${myCalendar.time.month + 1}/${myCalendar.time.date}"
         //var timeNow = "${LocalDateTime.now().hour.toString()}:${LocalDateTime.now().minute.toString()}:${LocalDateTime.now().second.toString()}"
-        var timeNow = Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()+":"+
-                Calendar.getInstance().time.seconds.toString()
+        var timeNow = nuevaFecha_ventas.text.toString()
+        timeNow.split(" - ").apply {
+            timeNow = this[1]
+        }
 
         if(checkFields()) {
             //Si la venta se realizo

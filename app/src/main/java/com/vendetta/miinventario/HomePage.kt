@@ -23,18 +23,10 @@ class HomePage : AppCompatActivity() {
         setContentView(R.layout.activity_home_page)
         auth = Firebase.auth
         loadPreferences()
-        if(!isAdmin){
-            addUser_btn.visibility = View.INVISIBLE
-        }
 
 
         btn_logout.setOnClickListener {
             logout()
-        }
-
-        addUser_btn.setOnClickListener{
-            //Intent(this, PantallaTest::class.java).apply { startActivity(this) }
-            Intent(this, RegisterUsers::class.java).apply { startActivity(this) }
         }
 
 

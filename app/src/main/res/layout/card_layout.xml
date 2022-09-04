@@ -33,11 +33,12 @@
         tool:text="Camiseta Juvenil" />
 
     <TextView
+        android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Precio: "
-        android:textStyle="bold"
         android:textColor="@color/black"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/item_precio" />
 
@@ -49,7 +50,8 @@
         android:textColor="#1A5A00"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/deleteVentaBtn"
+        android:layout_marginEnd="20dp"
         tool:text="50" />
 
     <TextView
@@ -60,5 +62,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tool:text="31/08/22 -at 18:30" />
+
+    <ImageButton
+        android:id="@+id/deleteVentaBtn"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="#00FFFFFF"
+        android:scaleType="fitXY"
+        android:src="@drawable/delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

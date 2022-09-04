@@ -19,6 +19,7 @@ import com.google.firebase.ktx.Firebase
 import com.vendetta.miinventario.recycler.Ventas
 import com.vendetta.miinventario.recycler.VentasAdapter
 import kotlinx.android.synthetic.main.activity_ventas_home.*
+import kotlinx.android.synthetic.main.card_layout.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -52,6 +53,8 @@ class VentasHome : AppCompatActivity() {
         crearVenta_btn.setOnClickListener {
         Intent(this,NuevaVenta::class.java).apply { startActivity(this) }
         }
+
+
 
 
 
@@ -153,7 +156,7 @@ class VentasHome : AppCompatActivity() {
         val recyclerView = recycleVentas
         sortList()
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = VentasAdapter(ventasProviderList)
+        recyclerView.adapter = VentasAdapter(ventasProviderList, database)
     }
 
     fun sortList(){

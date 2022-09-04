@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vendetta.miinventario.R
 import com.vendetta.miinventario.productosProviderList
 
-class ProductosAdapter (val productosList:ArrayList<Productos>) : RecyclerView.Adapter<ProductosViewHolder>() {
+class ProductosAdapter (val productosList:ArrayList<Productos>,val database:String) : RecyclerView.Adapter<ProductosViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductosViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ProductosViewHolder(layoutInflater.inflate(R.layout.producto_card_layout,parent,false))
@@ -14,7 +14,7 @@ class ProductosAdapter (val productosList:ArrayList<Productos>) : RecyclerView.A
 
     override fun onBindViewHolder(holder: ProductosViewHolder, position: Int) {
         var item = productosProviderList[position]
-        holder.render(item)
+        holder.render(item,database)
     }
 
     override fun getItemCount(): Int {
