@@ -22,7 +22,7 @@ class NuevaVenta : AppCompatActivity() {
     var producto = ""
     var date = ""
     private lateinit var myCalendar : Calendar
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nueva_venta)
@@ -148,6 +148,8 @@ class NuevaVenta : AppCompatActivity() {
 
     fun updateFinanzas(dateToday: String, timeNow: String) {
         var countDay = 0; var countMonth = 0; var countYear = 0;
+        var dateMonth = "${myCalendar.time.year+1900}/${myCalendar.time.month + 1}"
+        var dateYear = "${myCalendar.time.year+1900}"
         //Get ventas del dia
         Firebase.database.getReference(database).child("Finanzas").child(dateToday)
             .child("ventas").get().addOnSuccessListener {
@@ -159,7 +161,31 @@ class NuevaVenta : AppCompatActivity() {
                     .child("ventas").setValue(countDay.toString())
 
             //Get Finanzas del mes
-                Firebase.database.getReference(database).child("Finanzas").child((Calendar.getInstance().time.month + 1).toString())
+                Firebase.database.getReference(database).child("Finanzas").child(dateMonth).
+                child("ventas").get().addOnSuccessListener {
+                    if (!it.exists()){
+                        countMonth = nuevoPrecio_ventas.text.toString().toInt()
+                    }
+                    else{
+                        countMonth = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()
+                    }
+                    Firebase.database.getReference(database).child("Finanzas").child(dateMonth)
+                        .child("ventas").setValue(countMonth.toString())
+
+                    //Get Finanzas del año
+                    Firebase.database.getReference(database).child("Finanzas").child(dateYear)
+                        .child("ventas").get().addOnSuccessListener {
+                            if(!it.exists()){
+                                countYear = nuevoPrecio_ventas.text.toString().toInt()
+                            }
+                            else{
+                                countYear = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()
+                            }
+
+                            Firebase.database.getReference(database).child("Finanzas").child(dateYear).
+                                child("ventas").setValue(countYear)
+                        }
+                }
             }
 
 
