@@ -1,15 +1,21 @@
 package com.vendetta.miinventario
 
 import android.app.DatePickerDialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_nueva_venta.*
@@ -21,11 +27,14 @@ class NuevaVenta : AppCompatActivity() {
     var database = ""
     var producto = ""
     var date = ""
+    private var mInterstitialAd: InterstitialAd? = null
     private lateinit var myCalendar : Calendar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nueva_venta)
+
+        loadAdFullScreen()
 
         crearNuevaVenta_btn.setOnClickListener {
             CrearBaseDatos()
@@ -40,9 +49,24 @@ class NuevaVenta : AppCompatActivity() {
         loadCalendar()
 
         nuevaFecha_ventas.isFocusable = false
-
-
     }
+
+    fun loadAdFullScreen(){
+        var adRequest = AdRequest.Builder().build()
+        //ca-app-pub-2467116940009132/5486356001
+        InterstitialAd.load(this, "ca-app-pub-2467116940009132/5486356001",adRequest,object: InterstitialAdLoadCallback(){
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+                println("Este es  el msj: "+adError.message)
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                println("Ad Loaded")
+                mInterstitialAd = interstitialAd
+            }
+        })
+    }
+
     fun loadCalendar(){
         myCalendar = Calendar.getInstance()
         var datePicker = DatePickerDialog.OnDateSetListener { datePicker, year, month,dayOfMonth ->
@@ -186,6 +210,10 @@ class NuevaVenta : AppCompatActivity() {
 
                             Firebase.database.getReference(database).child("Finanzas").child(dateYear).
                                 child("ventas").setValue(countYear)
+                            if (mInterstitialAd != null) {
+                                mInterstitialAd?.show(this)
+                            }else{println("El anuncio esta cargando")}
+
                         }
                 }
             }

@@ -6,6 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.widget.Toast
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.core.view.View
@@ -16,10 +20,14 @@ private lateinit var auth: FirebaseAuth
 private var mydatabase = ""
 private var isFirst = false
 class RegisterUsers : AppCompatActivity() {
+
+    private var mInterstitialAd: InterstitialAd? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_users)
         auth =  Firebase.auth
+        loadAdFullScreen()
         loadPreferences()
         if(isFirst){
             //Set visible
@@ -30,6 +38,22 @@ class RegisterUsers : AppCompatActivity() {
         btn_register.setOnClickListener {
             createUser()
         }
+    }
+
+    fun loadAdFullScreen(){
+        var adRequest = AdRequest.Builder().build()
+        //ca-app-pub-2467116940009132/5486356001
+        InterstitialAd.load(this, "ca-app-pub-2467116940009132/5486356001",adRequest,object: InterstitialAdLoadCallback(){
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+                println("Este es  el msj: "+adError.message)
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                println("Ad Loaded")
+                mInterstitialAd = interstitialAd
+            }
+        })
     }
 
     data class userInfo(var email:String,
@@ -66,6 +90,9 @@ class RegisterUsers : AppCompatActivity() {
                 var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
                 bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
                makeToast("Usuario registrado con exito")
+                if (mInterstitialAd != null) {
+                    mInterstitialAd?.show(this)
+                }else{println("El anuncio esta cargando")}
             }
             if(isFirst){
                 Intent(this,MainActivity::class.java).apply { startActivity(this) }
