@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         //Boton de login
         btn_login.setOnClickListener {
             //Se desactiva despues de dar un click
+
             loginUser()
         }
 
@@ -90,7 +91,10 @@ class MainActivity : AppCompatActivity() {
             else{makeToast("Rellene los campos")}
         }
         else{
-            println("Usuario loogeado con exito")}
+            println("Usuario loogeado con exito")
+            auth.signOut()
+            loginFirebase()
+        }
     }
 
     /**************************************
