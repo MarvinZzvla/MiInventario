@@ -26,7 +26,10 @@ class UsuarioViewHolder(view: View): RecyclerView.ViewHolder(view) {
             user.addOnSuccessListener {
                 it.user?.delete()
                 auth.signOut()
+                //Remover de su respectiva base de datos
                 Firebase.database.getReference(database).child("Usuarios").child(usuario.uid).removeValue()
+                //Remover de la base de datos en general
+                Firebase.database.getReference("Usuarios").child(usuario.uid).removeValue()
             }
 
         }

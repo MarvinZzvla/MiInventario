@@ -32,6 +32,7 @@ class RegisterUsers : AppCompatActivity() {
         if(isFirst){
             //Set visible
             register_negocio.visibility = android.view.View.VISIBLE
+            register_isAdmin.isChecked = true;
 
         }
 
@@ -89,12 +90,19 @@ class RegisterUsers : AppCompatActivity() {
                 //Registrar en su respectiva base de datos
                 var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
                 bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
+
                makeToast("Usuario registrado con exito")
                 if (mInterstitialAd != null) {
                     mInterstitialAd?.show(this)
                 }else{println("El anuncio esta cargando")}
             }
             if(isFirst){
+                if(auth.currentUser != null){
+                    auth.signOut()
+                }
+                var prefs = getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit()
+                prefs.clear()
+                prefs.apply()
                 Intent(this,MainActivity::class.java).apply { startActivity(this) }
             }
             else {

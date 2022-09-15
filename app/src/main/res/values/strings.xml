@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Mi Inventario</string>
     <string name="banner_down">ca-app-pub-2467116940009132/3469770599</string>
+    <!-- Prueba de anuncios
+    <string name="banner_down">ca-app-pub-3940256099942544/6300978111</string>
+    -->
     <string name="ad_fullScreen">ca-app-pub-3940256099942544/1033173712</string>
 
 </resources>

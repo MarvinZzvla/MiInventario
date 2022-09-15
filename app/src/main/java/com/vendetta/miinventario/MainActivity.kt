@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         //Boton de login
         btn_login.setOnClickListener {
             //Se desactiva despues de dar un click
-
             loginUser()
         }
 

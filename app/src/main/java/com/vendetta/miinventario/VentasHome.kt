@@ -149,7 +149,7 @@ class VentasHome : AppCompatActivity() {
                 precioProducts.add(it.child("precio").value.toString())
                 dateProducts.add(it.child("date").value.toString())
                 ventasProviderList.add(Ventas(it.child("name").value.toString(),
-                    it.child("date").value.toString(), it.child("precio").value.toString()))
+                    it.child("date").value.toString(), it.child("precio").value.toString(),it.child("cantidad").value.toString()))
             }
         initRecycleView()
 

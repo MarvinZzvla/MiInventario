@@ -15,6 +15,7 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
     var ventaName = view.findViewById<TextView>(R.id.item_title)
     var ventaPrecio = view.findViewById<TextView>(R.id.item_precio)
     var ventasDate = view.findViewById<TextView>(R.id.item_date)
+    var ventasCantidad = view.findViewById<TextView>(R.id.item_cantidad)
     var deleteImage = view.findViewById<ImageButton>(R.id.deleteVentaBtn)
 
 
@@ -22,6 +23,11 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         ventaName.text = ventas.venta_name
         ventaPrecio.text = ventas.venta_precio
         ventasDate.text = ventas.venta_date
+        if(ventas.venta_cantidad != "null")
+        {
+        ventasCantidad.text = ventas.venta_cantidad
+        }else {ventasCantidad.text = "1"}
+
 
         deleteImage.setOnClickListener(object : View.OnClickListener{
             override fun onClick(view: View?) {

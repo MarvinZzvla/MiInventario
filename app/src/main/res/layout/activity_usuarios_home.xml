@@ -13,14 +13,15 @@
         android:layout_height="48dp"
         android:background="@drawable/bg_form"
         android:padding="5dp"
-        app:layout_constraintVertical_bias="0.01"
-        app:layout_constraintHorizontal_bias="0.05"
         android:scaleType="fitXY"
         android:src="@drawable/add_user"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.01"
+        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
     <TextView
         android:id="@+id/textView7"

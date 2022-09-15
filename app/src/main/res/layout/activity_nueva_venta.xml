@@ -61,6 +61,12 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:hint="Precio" />
+            <EditText
+                android:id="@+id/nuevaCantidad_ventas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Cantidad" />
 
             <Button
                 android:id="@+id/crearNuevaVenta_btn"
