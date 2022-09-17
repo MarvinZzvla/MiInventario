@@ -61,19 +61,19 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tool:text="31/08/22 -at 18:30" />
+        tool:text="18/9/2022 - 22:54" />
 
     <TextView
         android:id="@+id/item_cantidad_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Cantidad: "
         android:textColor="@color/black"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/item_cantidad"
         app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="Cantidad: " />
+        app:layout_constraintStart_toEndOf="@+id/item_date" />
 
     <TextView
         android:id="@+id/item_cantidad"

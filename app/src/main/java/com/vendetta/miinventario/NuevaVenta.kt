@@ -16,6 +16,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_nueva_venta.*
@@ -40,9 +41,26 @@ class NuevaVenta : AppCompatActivity() {
         crearNuevaVenta_btn.setOnClickListener {
             cantidad = 1
             if(nuevaCantidad_ventas.text.isNotEmpty()){
-                cantidad = nuevaCantidad_ventas.text.toString().toInt()
+                if(nuevaCantidad_ventas.text.toString().toInt() <= 0){
+                    cantidad = 1
+                }
+                else {
+                    cantidad = nuevaCantidad_ventas.text.toString().toInt()
+                }
             }
-            CrearBaseDatos()
+
+            println("Este es el producto a vender" + producto)
+            Firebase.database.getReference(database).child("Productos").child(producto).child("cantidad").get().addOnSuccessListener {
+                if(it.exists()){
+                    var cantidadDisponible = it.value.toString().toInt()
+                    if(cantidadDisponible >= cantidad){
+                        CrearBaseDatos()
+                    } else{Toast.makeText(this,"Cantidad Insuficiente de este producto, tienes: $cantidadDisponible $producto",Toast.LENGTH_SHORT).show()}
+                }else{
+                    Toast.makeText(this,"Ocurrio un error inesperado intente mas tarde",Toast.LENGTH_SHORT).show()
+                }
+            }
+            //CrearBaseDatos()
         }
 
     }
@@ -95,8 +113,7 @@ class NuevaVenta : AppCompatActivity() {
         date = myCalendar.time.date.toString()+"/"+
                 (myCalendar.time.month + 1).toString()+"/"+
                 (myCalendar.time.year + 1900).toString()+" - "+
-                Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()+":"+
-                Calendar.getInstance().time.seconds.toString()
+                Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()
         nuevaFecha_ventas.text = Editable.Factory.getInstance().newEditable(date)
     }
 
@@ -169,8 +186,7 @@ class NuevaVenta : AppCompatActivity() {
             }
             updateFinanzas(dateToday,timeNow)
 
-
-           // Intent(this,VentasHome::class.java).apply { startActivity(this) }
+            Intent(this,VentasHome::class.java).apply { startActivity(this) }
         }
         //Si la venta no se realizo
         else{
@@ -185,7 +201,7 @@ class NuevaVenta : AppCompatActivity() {
         //Get ventas del dia
         Firebase.database.getReference(database).child("Finanzas").child(dateToday)
             .child("ventas").get().addOnSuccessListener {
-                if (!it.exists()){ countDay = nuevoPrecio_ventas.text.toString().toInt()}
+                if (!it.exists()){ countDay = nuevoPrecio_ventas.text.toString().toInt() * cantidad}
                 else{
                 countDay = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()* cantidad}
                 //Finanzas del dia - Set ventas del dia
@@ -196,7 +212,7 @@ class NuevaVenta : AppCompatActivity() {
                 Firebase.database.getReference(database).child("Finanzas").child(dateMonth).
                 child("ventas").get().addOnSuccessListener {
                     if (!it.exists()){
-                        countMonth = nuevoPrecio_ventas.text.toString().toInt()
+                        countMonth = nuevoPrecio_ventas.text.toString().toInt() * cantidad
                     }
                     else{
                         countMonth = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()* cantidad
@@ -208,7 +224,7 @@ class NuevaVenta : AppCompatActivity() {
                     Firebase.database.getReference(database).child("Finanzas").child(dateYear)
                         .child("ventas").get().addOnSuccessListener {
                             if(!it.exists()){
-                                countYear = nuevoPrecio_ventas.text.toString().toInt()
+                                countYear = nuevoPrecio_ventas.text.toString().toInt()* cantidad
                             }
                             else{
                                 countYear = it.value.toString().toInt() + (nuevoPrecio_ventas.text.toString().toInt() * cantidad)
@@ -216,7 +232,7 @@ class NuevaVenta : AppCompatActivity() {
 
                             Firebase.database.getReference(database).child("Finanzas").child(dateYear).
                                 child("ventas").setValue(countYear)
-
+                            //Inicializar anuncio
                             if (mInterstitialAd != null) {
                                 mInterstitialAd?.show(this)
                             }else{println("El anuncio esta cargando")}

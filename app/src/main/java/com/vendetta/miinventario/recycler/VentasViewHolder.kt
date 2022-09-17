@@ -21,12 +21,14 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
 
     fun render(ventas:Ventas,database:String){
         ventaName.text = ventas.venta_name
-        ventaPrecio.text = ventas.venta_precio
+        ventaPrecio.text = (ventas.venta_precio.toInt() * ventas.venta_cantidad.toInt()).toString()
         ventasDate.text = ventas.venta_date
         if(ventas.venta_cantidad != "null")
         {
         ventasCantidad.text = ventas.venta_cantidad
         }else {ventasCantidad.text = "1"}
+
+
 
 
         deleteImage.setOnClickListener(object : View.OnClickListener{
@@ -79,12 +81,13 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         var countDay = 0; var countMonth = 0; var countYear = 0;
         var dateMonth = "${year}/${month}"
         var dateYear = "${year}"
+        var cantidad = ventasCantidad.text.toString().toInt()
 
         //Update Cantidad
         //Actualizar la cantidad actual de producto vendido
         Firebase.database.getReference(database).child("Productos").child(ventas.venta_name).child("cantidad").get().addOnSuccessListener {
             var count = it.value.toString().toInt()
-            count++
+            count+=cantidad
             Firebase.database.getReference(database).child("Productos").child(ventas.venta_name).child("cantidad").setValue(count.toString())
 
         }
@@ -92,9 +95,9 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         //Get ventas del dia
         Firebase.database.getReference(database).child("Finanzas").child(dateToday)
             .child("ventas").get().addOnSuccessListener {
-                if (!it.exists()){ countDay = ventas.venta_precio.toInt()}
+                if (!it.exists()){ countDay = ventas.venta_precio.toInt()*cantidad}
                 else{
-                    countDay = it.value.toString().toInt() - ventas.venta_precio.toString().toInt()}
+                    countDay = it.value.toString().toInt() - ventas.venta_precio.toString().toInt()*cantidad}
                 //Finanzas del dia - Set ventas del dia
                 Firebase.database.getReference(database).child("Finanzas").child(dateToday)
                     .child("ventas").setValue(countDay.toString())
@@ -103,10 +106,10 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
                 Firebase.database.getReference(database).child("Finanzas").child(dateMonth).
                 child("ventas").get().addOnSuccessListener {
                     if (!it.exists()){
-                        countMonth = ventas.venta_precio.toString().toInt()
+                        countMonth = ventas.venta_precio.toString().toInt()*cantidad
                     }
                     else{
-                        countMonth = it.value.toString().toInt() - ventas.venta_precio.toString().toInt()
+                        countMonth = it.value.toString().toInt() - ventas.venta_precio.toString().toInt()*cantidad
                     }
                     Firebase.database.getReference(database).child("Finanzas").child(dateMonth)
                         .child("ventas").setValue(countMonth.toString())
@@ -115,10 +118,10 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
                     Firebase.database.getReference(database).child("Finanzas").child(dateYear)
                         .child("ventas").get().addOnSuccessListener {
                             if(!it.exists()){
-                                countYear = ventas.venta_precio.toString().toInt()
+                                countYear = ventas.venta_precio.toString().toInt()*cantidad
                             }
                             else{
-                                countYear = it.value.toString().toInt() - ventas.venta_precio.toString().toInt()
+                                countYear = it.value.toString().toInt() - ventas.venta_precio.toString().toInt()*cantidad
                             }
 
                             Firebase.database.getReference(database).child("Finanzas").child(dateYear).

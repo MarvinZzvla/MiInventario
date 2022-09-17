@@ -50,7 +50,22 @@ class HomePage : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         loadPreferences()
+        loadViews()
         database_name.text = database.toString()
+    }
+
+    //Si el usuario no es administrador desactivar las opciones Productos, Finanzas y Usuarios
+    fun loadViews(){
+        if(!isAdmin){
+            productos_btn.visibility = View.GONE
+            finanzas_btn.visibility = View.GONE
+            usuarios_btn.visibility = View.GONE
+        }
+        else{
+            productos_btn.visibility = View.VISIBLE
+            finanzas_btn.visibility = View.VISIBLE
+            usuarios_btn.visibility = View.VISIBLE
+        }
     }
 
     fun logout(){
