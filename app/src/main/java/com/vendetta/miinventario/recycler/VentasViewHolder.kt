@@ -1,5 +1,7 @@
 package com.vendetta.miinventario.recycler
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -63,11 +65,31 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
             }
         }
 
-        Firebase.database.getReference(database).child("Ventas").child(dateToday).child(timeVenta).removeValue().addOnSuccessListener {
-            Toast.makeText(itemView.context,"Eliminado!",Toast.LENGTH_SHORT).show()
+        val alertDialog: AlertDialog? = ventaName.context?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton("Si",
+                    DialogInterface.OnClickListener { dialog, id ->
+                        Firebase.database.getReference(database).child("Ventas").child(dateToday).child(timeVenta).removeValue().addOnSuccessListener {
+                            Toast.makeText(itemView.context,"Eliminado!",Toast.LENGTH_SHORT).show()
+                        }
+                        updateFinanzas(database,dateToday,month,year,ventas)
+                    })
+                setNegativeButton("No",
+                    DialogInterface.OnClickListener { dialog, id ->
+                        // User cancelled the dialog
+                    })
+                setTitle("Eliminar Venta")
+                setMessage("¿Desea realmente eliminar esta venta?")
+                show()
+            }
+            builder.create()
         }
+        //END
 
-        updateFinanzas(database,dateToday,month,year,ventas)
+
+
+
 
     }
 

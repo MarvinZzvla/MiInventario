@@ -33,6 +33,7 @@ class RegisterUsers : AppCompatActivity() {
             //Set visible
             register_negocio.visibility = android.view.View.VISIBLE
             register_isAdmin.isChecked = true;
+            register_isAdmin.visibility = android.view.View.INVISIBLE
 
         }
 
