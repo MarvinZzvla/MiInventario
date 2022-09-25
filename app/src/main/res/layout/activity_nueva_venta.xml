@@ -50,11 +50,20 @@
                 android:id="@+id/spinner_productos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Click para cambiar la fecha"/>
+
             <EditText
                 android:id="@+id/nuevaFecha_ventas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Fecha"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Precio de venta"/>
 
             <EditText
                 android:id="@+id/nuevoPrecio_ventas"
@@ -62,6 +71,10 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:hint="Precio" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cantidad vendida"/>
             <EditText
                 android:id="@+id/nuevaCantidad_ventas"
                 android:layout_width="match_parent"

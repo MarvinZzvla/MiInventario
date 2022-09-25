@@ -40,12 +40,22 @@
             android:background="@drawable/bg_form"
             android:padding="10dp"
             android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre"
+                />
 
             <EditText
                 android:id="@+id/editarNameProducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombre del producto" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Precio por unidad | Precio por producción"
+                />
 
             <EditText
                 android:id="@+id/editarPrecio_producto"
@@ -53,6 +63,11 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:hint="Precio" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cantidad"
+                />
 
             <EditText
                 android:id="@+id/editarCantidadProducto"

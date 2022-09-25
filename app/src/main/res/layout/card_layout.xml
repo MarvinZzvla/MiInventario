@@ -36,7 +36,7 @@
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Precio: "
+        android:text="Valor: "
         android:textColor="@color/black"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -52,7 +52,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/deleteVentaBtn"
         android:layout_marginEnd="20dp"
-        tool:text="50" />
+        tool:text="500" />
 
     <TextView
         android:id="@+id/item_date"
@@ -61,7 +61,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tool:text="18/9/2022 - 22:54" />
+        tool:text="18/9/2022 - 22:54:27" />
 
     <TextView
         android:id="@+id/item_cantidad_text"
@@ -70,20 +70,19 @@
         android:text="Cantidad: "
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/item_cantidad"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toEndOf="@+id/item_date" />
+        app:layout_constraintBottom_toTopOf="@+id/textView11"
+        app:layout_constraintEnd_toStartOf="@id/item_cantidad"
+        app:layout_constraintStart_toStartOf="@+id/textView11" />
 
     <TextView
         android:id="@+id/item_cantidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        app:layout_constraintHorizontal_bias="0.9"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView11"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/item_precio"
+        app:layout_constraintEnd_toStartOf="@+id/deleteVentaBtn"
+        app:layout_constraintStart_toEndOf="@+id/item_cantidad_text"
         tool:text="5" />
 
     <ImageButton

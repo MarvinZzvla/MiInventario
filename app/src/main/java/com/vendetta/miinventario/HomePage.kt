@@ -51,7 +51,7 @@ class HomePage : AppCompatActivity() {
         super.onStart()
         loadPreferences()
         loadViews()
-        database_name.text = database.toString()
+        database_name.text = database.split("~")[0]
     }
 
     //Si el usuario no es administrador desactivar las opciones Productos, Finanzas y Usuarios

@@ -52,6 +52,7 @@ class VentasHome : AppCompatActivity() {
         loadPreferences()
         initCalendar()
         getVentas()
+        ventasHomeFechaText.text = "Registros del $daySelected/$monthSelected/$yearSelected"
 
 
         crearVenta_btn.setOnClickListener {
@@ -68,6 +69,7 @@ class VentasHome : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -79,6 +81,7 @@ class VentasHome : AppCompatActivity() {
         daySelected = myCalendar.get(Calendar.DAY_OF_MONTH)
         monthSelected = myCalendar.get(Calendar.MONTH)+1
         yearSelected = myCalendar.get(Calendar.YEAR)
+        ventasHomeFechaText.text = "Registros del $daySelected/$monthSelected/$yearSelected"
 
     }
 
@@ -100,6 +103,7 @@ class VentasHome : AppCompatActivity() {
                 this, datePicker, myCalendar.get(Calendar.YEAR),
                 myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
+
         }
     }
 

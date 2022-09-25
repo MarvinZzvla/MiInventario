@@ -89,7 +89,8 @@ class RegisterUsers : AppCompatActivity() {
                 var db = Firebase.database.getReference("Usuarios").child(uid)
                 db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
                 //Registrar en su respectiva base de datos
-                var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
+                /***** Realizar cambio aqui ****/
+                var bussinesdb= Firebase.database.getReference("$mydatabase~$uid").child("Usuarios").child(uid)
                 bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
 
                makeToast("Usuario registrado con exito")

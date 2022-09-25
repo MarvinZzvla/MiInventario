@@ -74,6 +74,7 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
                             Toast.makeText(itemView.context,"Eliminado!",Toast.LENGTH_SHORT).show()
                         }
                         updateFinanzas(database,dateToday,month,year,ventas)
+                        updateGanancias(database,dateToday,month,year,ventas)
                     })
                 setNegativeButton("No",
                     DialogInterface.OnClickListener { dialog, id ->
@@ -91,6 +92,57 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
 
 
 
+    }
+
+    fun updateGanancias(
+        database: String,
+        dateToday: String,
+        month: String,
+        year: String,
+        ventas: Ventas
+    ) {
+        var countDay = 0; var countMonth = 0; var countYear = 0;
+        var precioProduccion = 0
+        var dateMonth = "${year}/${month}"
+        var dateYear = "${year}"
+        var cantidad = ventasCantidad.text.toString().toInt()
+
+        //Obtener el precio produccion del producto
+        Firebase.database.getReference(database).child("Productos").child(ventas.venta_name).child("precio").get().addOnSuccessListener {
+            precioProduccion = it.value.toString().toInt()
+            //Obtener las ganancias y sumarles las nuevas ganancias del dia de hoy
+            Firebase.database.getReference(database).child("Finanzas").child(dateToday).child("ganancias").get().addOnSuccessListener {
+                if(!it.exists()){
+                    countDay = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad
+                }
+                else{
+                    countDay = it.value.toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)
+                }
+                Firebase.database.getReference(database).child("Finanzas").child(dateToday).child("ganancias").setValue(countDay)
+
+                //Obtener las ganancias del mes y sumarles las nuevas ganacias del dia de hoy
+                Firebase.database.getReference(database).child("Finanzas").child(dateMonth).child("ganancias").get().addOnSuccessListener {
+                    if(!it.exists()){
+                        countMonth = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad
+                    }
+                    else{
+                        countMonth = it.value.toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)
+                    }
+                    Firebase.database.getReference(database).child("Finanzas").child(dateMonth).child("ganancias").setValue(countMonth)
+
+                    //Obtener las ganacias del año y sumarles las nuevas ganancias de hoy
+                    Firebase.database.getReference(database).child("Finanzas").child(dateYear).child("ganancias").get().addOnSuccessListener {
+                        if(!it.exists()){
+                            countYear = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad
+                        }
+                        else{
+                            countYear= it.value.toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)
+                        }
+                        Firebase.database.getReference(database).child("Finanzas").child(dateYear).child("ganancias").setValue(countYear)
+                    }
+                }
+            }
+        }
     }
 
     fun updateFinanzas(

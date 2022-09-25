@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.RequiresApi
 import com.google.android.gms.ads.AdRequest
 import com.google.firebase.database.DataSnapshot
@@ -32,6 +33,15 @@ class FinanzasHome : AppCompatActivity() {
         setContentView(R.layout.activity_finanzas_home)
         banner_finanzas.loadAd(AdRequest.Builder().build())
         loadPreferences()
+
+        showGanancias.setOnClickListener {
+            if (showGanancias.isChecked){
+                infoGanancias.visibility = View.GONE
+            }
+            else{
+                infoGanancias.visibility = View.VISIBLE
+            }
+        }
 
     }
 
@@ -77,11 +87,21 @@ class FinanzasHome : AppCompatActivity() {
         fechaMesFinanzas.text = "${listMes[(monthSelected.toInt()-1)]} $yearSelected"
         fechaYearFinanzas.text = yearSelected
 
+        var gananciasToday = list[0].child(yearSelected).child(monthSelected).child(
+            daySelected
+        ).child("ganancias").value
+        var gananciasMonth =  list[0].child(yearSelected).child(monthSelected).child("ganancias").value
+        var gananciasYear = list[0].child(yearSelected).child("ganancias").value
+
 
 
         ventasHoyText.text = "$${ventasToday?:0.toString()}"
         ventasMesText.text =  "$${ventasMonth?:0.toString()}"
         ventasYearText.text = "$${ventasYear?:0.toString()}"
+
+        ventasGananciasToday.text = "$${gananciasToday?:"0".toString()}"
+        ventasGanaciasMes.text = "$${gananciasMonth?:"0".toString()}"
+        ventasGanaciasYear.text = "$${gananciasYear?:"0".toString()}"
 
     }
 

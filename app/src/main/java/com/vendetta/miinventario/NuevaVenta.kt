@@ -1,26 +1,20 @@
 package com.vendetta.miinventario
 
 import android.app.DatePickerDialog
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_nueva_venta.*
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -113,7 +107,8 @@ class NuevaVenta : AppCompatActivity() {
         date = myCalendar.time.date.toString()+"/"+
                 (myCalendar.time.month + 1).toString()+"/"+
                 (myCalendar.time.year + 1900).toString()+" - "+
-                Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()
+                Calendar.getInstance().time.hours.toString()+":"+ Calendar.getInstance().time.minutes.toString()+":"+
+                Calendar.getInstance().time.seconds.toString()
         nuevaFecha_ventas.text = Editable.Factory.getInstance().newEditable(date)
     }
 
@@ -185,6 +180,7 @@ class NuevaVenta : AppCompatActivity() {
 
             }
             updateFinanzas(dateToday,timeNow)
+            updateGanancias(dateToday,timeNow)
 
             Intent(this,VentasHome::class.java).apply { startActivity(this) }
         }
@@ -193,6 +189,52 @@ class NuevaVenta : AppCompatActivity() {
             Toast.makeText(this,"Verifique todos los campos esten completos",Toast.LENGTH_SHORT).show()
         }
         }
+
+    fun updateGanancias(dateToday: String, timeNow: String) {
+        var countDay = 0; var countMonth = 0; var countYear = 0;
+        var precioProduccion = 0
+        var dateMonth = "${myCalendar.time.year+1900}/${myCalendar.time.month + 1}"
+        var dateYear = "${myCalendar.time.year+1900}"
+
+        //Obtener el precio produccion del producto
+        Firebase.database.getReference(database).child("Productos").child(producto).child("precio").get().addOnSuccessListener {
+            precioProduccion = it.value.toString().toInt()
+            //Obtener las ganancias y sumarles las nuevas ganancias del dia de hoy
+            Firebase.database.getReference(database).child("Finanzas").child(dateToday).child("ganancias").get().addOnSuccessListener {
+                if(!it.exists()){
+                    countDay = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad
+                }
+                else{
+                    countDay = it.value.toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)
+                }
+                Firebase.database.getReference(database).child("Finanzas").child(dateToday).child("ganancias").setValue(countDay)
+
+                //Obtener las ganancias del mes y sumarles las nuevas ganacias del dia de hoy
+                Firebase.database.getReference(database).child("Finanzas").child(dateMonth).child("ganancias").get().addOnSuccessListener {
+                    if(!it.exists()){
+                        countMonth = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad
+                    }
+                    else{
+                        countMonth = it.value.toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)
+                    }
+                    Firebase.database.getReference(database).child("Finanzas").child(dateMonth).child("ganancias").setValue(countMonth)
+
+                    //Obtener las ganacias del año y sumarles las nuevas ganancias de hoy
+                    Firebase.database.getReference(database).child("Finanzas").child(dateYear).child("ganancias").get().addOnSuccessListener {
+                        if(!it.exists()){
+                            countYear = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad
+                        }
+                        else{
+                            countYear= it.value.toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)
+                        }
+                        Firebase.database.getReference(database).child("Finanzas").child(dateYear).child("ganancias").setValue(countYear)
+                    }
+                }
+            }
+        }
+
+
+    }
 
     fun updateFinanzas(dateToday: String, timeNow: String) {
         var countDay = 0; var countMonth = 0; var countYear = 0;
@@ -232,6 +274,7 @@ class NuevaVenta : AppCompatActivity() {
 
                             Firebase.database.getReference(database).child("Finanzas").child(dateYear).
                                 child("ventas").setValue(countYear)
+
                             //Inicializar anuncio
                             if (mInterstitialAd != null) {
                                 mInterstitialAd?.show(this)
