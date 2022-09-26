@@ -37,7 +37,10 @@ class HomePage : AppCompatActivity() {
 
         //Botenes principales
         //ventas
+        /****
         ventas_btn.setOnClickListener { Intent(this,VentasHome::class.java).apply { startActivity(this) } }
+        ****/
+        ventas_btn.setOnClickListener { Intent(this,PantallaTest::class.java).apply { startActivity(this) } }
         //productos
         productos_btn.setOnClickListener { Intent(this,ProductosHome::class.java).apply { startActivity(this) } }
         //finanzas
