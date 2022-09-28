@@ -87,7 +87,7 @@ class RegisterUsers : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
                var uid = it.user?.uid.toString()
                 var db = Firebase.database.getReference("Usuarios").child(uid)
-                db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
+                db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
                 //Registrar en su respectiva base de datos
                 /***** Realizar cambio aqui ****/
                 var bussinesdb= Firebase.database.getReference("$mydatabase~$uid").child("Usuarios").child(uid)

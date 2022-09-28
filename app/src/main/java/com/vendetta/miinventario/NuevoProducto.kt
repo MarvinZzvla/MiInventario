@@ -3,6 +3,7 @@ package com.vendetta.miinventario
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -21,13 +22,26 @@ class NuevoProducto : AppCompatActivity() {
         loadPreferences()
 
         crearNuevoProducto_btn.setOnClickListener {
-            Firebase.database.getReference(database).child("Productos").child(nuevoNameProducto.text.toString()).setValue(Productos(
-                nuevoNameProducto.text.toString(),nuevoPrecio_producto.text.toString(),
-                nuevaCantidadProducto.text.toString()
+            if (checkFields()){
+                createProducto()
+            }else{
+                Toast.makeText(this,"Completa porfavor todos los campos",Toast.LENGTH_SHORT).show()
+            }
 
-            ))
-            Intent(this,ProductosHome::class.java).apply { startActivity(this) }
         }
+    }
+
+    fun createProducto(){
+        Firebase.database.getReference(database).child("Productos").child(nuevoNameProducto.text.toString()).setValue(Productos(
+            nuevoNameProducto.text.toString(),nuevoPrecio_producto.text.toString(),
+            nuevaCantidadProducto.text.toString()
+
+        ))
+        Intent(this,ProductosHome::class.java).apply { startActivity(this) }
+    }
+
+    fun checkFields():Boolean{
+        return nuevoNameProducto.text.isNotEmpty() && nuevaCantidadProducto.text.isNotEmpty() && nuevoPrecio_producto.text.isNotEmpty()
     }
 
     fun loadPreferences(){

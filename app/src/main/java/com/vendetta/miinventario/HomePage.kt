@@ -4,18 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_home_page.*
+import kotlin.system.exitProcess
 
 
 private lateinit var auth: FirebaseAuth
 private var database = ""
 private var isAdmin = false
 private var fullname=""
+private var backPressedline =0L;
 
 
 
@@ -37,10 +40,10 @@ class HomePage : AppCompatActivity() {
 
         //Botenes principales
         //ventas
-        /****
+
         ventas_btn.setOnClickListener { Intent(this,VentasHome::class.java).apply { startActivity(this) } }
-        ****/
-        ventas_btn.setOnClickListener { Intent(this,PantallaTest::class.java).apply { startActivity(this) } }
+
+       /** ventas_btn.setOnClickListener { Intent(this,PantallaTest::class.java).apply { startActivity(this) } }*/
         //productos
         productos_btn.setOnClickListener { Intent(this,ProductosHome::class.java).apply { startActivity(this) } }
         //finanzas
@@ -79,6 +82,7 @@ class HomePage : AppCompatActivity() {
         var prefs = getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit()
         prefs.clear()
         prefs.apply()
+        this.finish()
         Intent(this,MainActivity::class.java).apply { startActivity(this) }
     }
 
@@ -94,6 +98,10 @@ class HomePage : AppCompatActivity() {
         getSharedPreferences("login_prefs",Context.MODE_PRIVATE).apply {
             fullname = this.getString("name","null").toString()
         }
+    }
+
+    override fun onBackPressed() {
+        Intent(this,HomePage::class.java).apply { startActivity(this) }
     }
 
 }

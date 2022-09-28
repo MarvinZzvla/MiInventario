@@ -18,6 +18,7 @@ private lateinit var auth: FirebaseAuth
 private lateinit var database:HashMap<String,Any?>
 //Variable para saber si esta logeado en Firebase auth
 var isLogin = true
+private var backPressedline =0L;
 
 
 class MainActivity : AppCompatActivity() {
@@ -146,6 +147,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+
+        Intent(this,MainActivity::class.java).apply { startActivity(this) }
+    }
 
     }
 
