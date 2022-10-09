@@ -8,11 +8,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import android.widget.*
+import androidx.core.view.size
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_nueva_venta.*
 import java.util.*
@@ -22,15 +25,18 @@ class NuevaVenta : AppCompatActivity() {
     var database = ""
     var producto = ""
     var date = ""
+
     var cantidad = 1;
     private var mInterstitialAd: InterstitialAd? = null
     private lateinit var myCalendar : Calendar
+    private val fireData = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nueva_venta)
 
         loadAdFullScreen()
+
 
         crearNuevaVenta_btn.setOnClickListener {
             cantidad = 1
@@ -43,18 +49,15 @@ class NuevaVenta : AppCompatActivity() {
                 }
             }
 
-            println("Este es el producto a vender" + producto)
-            Firebase.database.getReference(database).child("Productos").child(producto).child("cantidad").get().addOnSuccessListener {
-                if(it.exists()){
-                    var cantidadDisponible = it.value.toString().toInt()
-                    if(cantidadDisponible >= cantidad){
-                        CrearBaseDatos()
-                    } else{Toast.makeText(this,"Cantidad Insuficiente de este producto, tienes: $cantidadDisponible $producto",Toast.LENGTH_SHORT).show()}
-                }else{
-                    Toast.makeText(this,"Ocurrio un error inesperado intente mas tarde",Toast.LENGTH_SHORT).show()
+            /*****NUEVA BASE DE DATOS******/
+            fireData.collection("db1").document(database).collection("Productos").document(producto).get().addOnSuccessListener {
+                var cantidadDisponible = it.data?.get("cantidad").toString().toInt()
+                println("Cantidad disponible" + it.data?.get("cantidad").toString())
+                if (cantidadDisponible >= cantidad){
+                    CrearBaseDatos()
                 }
+                else{Toast.makeText(this,"Cantidad Insuficiente de este producto, tienes: $cantidadDisponible $producto",Toast.LENGTH_SHORT).show()}
             }
-            //CrearBaseDatos()
         }
 
     }
@@ -116,13 +119,18 @@ class NuevaVenta : AppCompatActivity() {
         var listProductos = arrayListOf<String>()
         var adapter = ArrayAdapter(this, R.layout.spinner_style,listProductos)
 
-        Firebase.database.getReference(database).child("Productos").get().addOnSuccessListener {
-            for(child in it.children){
-                listProductos.add(child.key.toString())
-            }
+        /***New Base de datos***/
+        fireData.collection("db1").document(database).collection("Productos").get().addOnSuccessListener {
 
+            for (producto in it.documents) {
+                listProductos.add(producto.id.toString())
+
+            }
+            if (listProductos.isEmpty()){
+                Toast.makeText(this,"Primero registre un producto",Toast.LENGTH_SHORT).show()
+            }
             spinner_productos.adapter = adapter
-            spinner_productos.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            spinner_productos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     producto = listProductos[p2]
                 }
@@ -130,7 +138,6 @@ class NuevaVenta : AppCompatActivity() {
                 override fun onNothingSelected(p0: AdapterView<*>?) {
 
                 }
-
             }
         }
 
@@ -164,7 +171,9 @@ class NuevaVenta : AppCompatActivity() {
 
         if(checkFields()) {
             //Si la venta se realizo
-            Firebase.database.getReference(database).child("Ventas").child(dateToday).child(timeNow).setValue(
+
+            /*****Nueva Base de datos*******/
+            fireData.collection("db1").document(database).collection("Ventas").document(database).collection(dateToday).document(timeNow).set(
                 ventaData(
                     producto,
                     nuevaFecha_ventas.text.toString(),
@@ -172,15 +181,9 @@ class NuevaVenta : AppCompatActivity() {
                     cantidad
                 )
             )
-            //Actualizar la cantidad actual de producto vendido
-            Firebase.database.getReference(database).child("Productos").child(producto).child("cantidad").get().addOnSuccessListener {
-                var count = it.value.toString().toInt()
-                count -= cantidad
-                Firebase.database.getReference(database).child("Productos").child(producto).child("cantidad").setValue(count.toString())
 
-            }
-            updateFinanzas(dateToday,timeNow)
-            updateGanancias(dateToday,timeNow)
+            updateFinanzasFire(dateToday,timeNow)
+            updateGanaciasFire(dateToday,timeNow)
 
             Intent(this,VentasHome::class.java).apply { startActivity(this) }
         }
@@ -190,102 +193,77 @@ class NuevaVenta : AppCompatActivity() {
         }
         }
 
-    fun updateGanancias(dateToday: String, timeNow: String) {
+    fun updateGanaciasFire(dateToday: String, timeNow: String) {
         var countDay = 0; var countMonth = 0; var countYear = 0;
         var precioProduccion = 0
         var dateMonth = "${myCalendar.time.year+1900}/${myCalendar.time.month + 1}"
         var dateYear = "${myCalendar.time.year+1900}"
 
         //Obtener el precio produccion del producto
-        Firebase.database.getReference(database).child("Productos").child(producto).child("precio").get().addOnSuccessListener {
-            precioProduccion = it.value.toString().toInt()
-            //Obtener las ganancias y sumarles las nuevas ganancias del dia de hoy
-            Firebase.database.getReference(database).child("Finanzas").child(dateToday).child("ganancias").get().addOnSuccessListener {
-                if(!it.exists()){
-                    countDay = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad
-                }
-                else{
-                    countDay = it.value.toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)
-                }
-                Firebase.database.getReference(database).child("Finanzas").child(dateToday).child("ganancias").setValue(countDay)
+        fireData.collection("db1").document(database).collection("Productos").document(producto).get().addOnSuccessListener {
+            precioProduccion = it.data?.get("precio").toString().toInt()
+        }
+        //Obtener ganancias y sumarles las nuevas ganancias del dia de hoy
+        fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
+            if(!it.exists()){countDay = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad }
+            else{ countDay = it.data?.get("ganancias").toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)}
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(hashMapOf("ganancias" to countDay.toString()),SetOptions.merge())
 
-                //Obtener las ganancias del mes y sumarles las nuevas ganacias del dia de hoy
-                Firebase.database.getReference(database).child("Finanzas").child(dateMonth).child("ganancias").get().addOnSuccessListener {
-                    if(!it.exists()){
-                        countMonth = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad
-                    }
-                    else{
-                        countMonth = it.value.toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)
-                    }
-                    Firebase.database.getReference(database).child("Finanzas").child(dateMonth).child("ganancias").setValue(countMonth)
+            //Obtener las ganancias del mes y sumarles las nuevas ganancias del dia de hoy
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").get().addOnSuccessListener {
+                if(!it.exists()){countMonth = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad}
+                else{countMonth= it.data?.get("ganancias").toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)}
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").set(hashMapOf("ganancias" to countMonth.toString()))
 
-                    //Obtener las ganacias del año y sumarles las nuevas ganancias de hoy
-                    Firebase.database.getReference(database).child("Finanzas").child(dateYear).child("ganancias").get().addOnSuccessListener {
-                        if(!it.exists()){
-                            countYear = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad
-                        }
-                        else{
-                            countYear= it.value.toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)
-                        }
-                        Firebase.database.getReference(database).child("Finanzas").child(dateYear).child("ganancias").setValue(countYear)
-                    }
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
+                    if(!it.exists()){countYear = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad}
+                    else{countYear = it.data?.get("ganancias").toString().toInt() + ((nuevoPrecio_ventas.text.toString().toInt() - precioProduccion)*cantidad)}
+                    fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(hashMapOf("ganancias" to countYear.toString()),
+                        SetOptions.merge())
                 }
             }
         }
-
-
     }
 
-    fun updateFinanzas(dateToday: String, timeNow: String) {
+
+    fun updateFinanzasFire(dateToday: String, timeNow: String) {
         var countDay = 0; var countMonth = 0; var countYear = 0;
         var dateMonth = "${myCalendar.time.year+1900}/${myCalendar.time.month + 1}"
         var dateYear = "${myCalendar.time.year+1900}"
+
         //Get ventas del dia
-        Firebase.database.getReference(database).child("Finanzas").child(dateToday)
-            .child("ventas").get().addOnSuccessListener {
-                if (!it.exists()){ countDay = nuevoPrecio_ventas.text.toString().toInt() * cantidad}
-                else{
-                countDay = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()* cantidad}
-                //Finanzas del dia - Set ventas del dia
-                Firebase.database.getReference(database).child("Finanzas").child(dateToday)
-                    .child("ventas").setValue((countDay).toString())
+        fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
+            if(!it.exists()){ countDay = nuevoPrecio_ventas.text.toString().toInt()*cantidad }
+            else{ countDay = it.data?.get("ventas").toString().toInt() + nuevoPrecio_ventas.text.toString().toInt() * cantidad }
+            //Finanzas del dia -Set Ventas del dia
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
+                hashMapOf("ventas" to countDay.toString()))
 
-            //Get Finanzas del mes
-                Firebase.database.getReference(database).child("Finanzas").child(dateMonth).
-                child("ventas").get().addOnSuccessListener {
-                    if (!it.exists()){
-                        countMonth = nuevoPrecio_ventas.text.toString().toInt() * cantidad
-                    }
-                    else{
-                        countMonth = it.value.toString().toInt() + nuevoPrecio_ventas.text.toString().toInt()* cantidad
-                    }
-                    Firebase.database.getReference(database).child("Finanzas").child(dateMonth)
-                        .child("ventas").setValue((countMonth).toString())
+            //Get finanzas del mes
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").get().addOnSuccessListener {
+                if(!it.exists()){countMonth = nuevoPrecio_ventas.text.toString().toInt() * cantidad}
+                else{countMonth = it.data?.get("ventas").toString().toInt() + nuevoPrecio_ventas.text.toString().toInt() * cantidad}
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").set(
+                    hashMapOf("ventas" to countMonth.toString()))
 
-                    //Get Finanzas del año
-                    Firebase.database.getReference(database).child("Finanzas").child(dateYear)
-                        .child("ventas").get().addOnSuccessListener {
-                            if(!it.exists()){
-                                countYear = nuevoPrecio_ventas.text.toString().toInt()* cantidad
-                            }
-                            else{
-                                countYear = it.value.toString().toInt() + (nuevoPrecio_ventas.text.toString().toInt() * cantidad)
-                            }
+                //Get finanzas del año
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
+                    if(!it.exists()){countYear = nuevoPrecio_ventas.text.toString().toInt()* cantidad}
+                    else{ countYear = it.data?.get("ventas").toString().toInt() + (nuevoPrecio_ventas.text.toString().toInt() * cantidad)}
+                    fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
+                        hashMapOf("ventas" to countYear.toString()))
 
-                            Firebase.database.getReference(database).child("Finanzas").child(dateYear).
-                                child("ventas").setValue(countYear)
-
-                            //Inicializar anuncio
-                            if (mInterstitialAd != null) {
-                                mInterstitialAd?.show(this)
-                            }else{println("El anuncio esta cargando")}
-
-                        }
+                    //Inicializar anuncio
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(this)
+                    }else{println("El anuncio esta cargando")}
                 }
             }
-
-
+        }
     }
+    /******DELETE****/
+
+
 
     override fun onBackPressed() {
         super.onBackPressed()

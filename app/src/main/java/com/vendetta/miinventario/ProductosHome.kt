@@ -14,6 +14,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.vendetta.miinventario.recycler.Productos
 import com.vendetta.miinventario.recycler.ProductosAdapter
@@ -21,10 +23,12 @@ import kotlinx.android.synthetic.main.activity_productos_home.*
 
 private var database = ""
 private lateinit var auth: FirebaseAuth
-private var list = arrayListOf<DataSnapshot>()
+private var list = arrayListOf<QuerySnapshot>()
 var productosProviderList = arrayListOf<Productos>()
 
 class ProductosHome : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.N)
+    private val fireData = Firebase.firestore
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,39 +45,30 @@ class ProductosHome : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun getProductos(){
-
-        Firebase.database.getReference(database).child("Productos").addValueEventListener(
-            object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    list.clear()
-                    list.add(snapshot)
-                    providerProductos()
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-
-                }
-
-            })
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun providerProductos() {
-        productosProviderList.clear()
-
-        list[0].children.forEach {
-            productosProviderList.add(
-                Productos(it.child("name").value.toString(),it.child("precio").value.toString(),
-                "Cantidad: ${it.child("cantidad").value.toString()}")
-            )
+        fireData.collection("db1").document(database).collection("Productos").addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                list.clear()
+                list.add(snapshot)
+                providerProductos()
+            }
         }
+    }
+    fun providerProductos(){
+        productosProviderList.clear()
+        for(producto in list[0].documents){
+            val p = producto.data
+            productosProviderList.add(Productos(p?.get("name").toString(),p?.get("precio").toString(),
+                "Cantidad: ${p?.get("cantidad").toString()}"))
 
+        }
         productosProviderList.sortBy {
             it.cantidad.reversed()
         }
 
         initRecycleView()
-
     }
 
     fun initRecycleView(){

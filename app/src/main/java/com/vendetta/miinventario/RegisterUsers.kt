@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.core.view.View
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_register_users.*
 private lateinit var auth: FirebaseAuth
@@ -22,11 +23,13 @@ private var isFirst = false
 class RegisterUsers : AppCompatActivity() {
 
     private var mInterstitialAd: InterstitialAd? = null
+    val fireData = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_users)
         auth =  Firebase.auth
+
         loadAdFullScreen()
         loadPreferences()
         if(isFirst){
@@ -38,13 +41,16 @@ class RegisterUsers : AppCompatActivity() {
         }
 
         btn_register.setOnClickListener {
-            createUser()
+            //createUser()
+            createUserFireStore()
         }
     }
 
     fun loadAdFullScreen(){
         var adRequest = AdRequest.Builder().build()
-        //ca-app-pub-2467116940009132/5486356001
+        // ORIGINAL ca-app-pub-2467116940009132/5486356001
+        //TEST ca-app-pub-3940256099942544/1033173712
+
         InterstitialAd.load(this, "ca-app-pub-2467116940009132/5486356001",adRequest,object: InterstitialAdLoadCallback(){
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 mInterstitialAd = null
@@ -64,8 +70,7 @@ class RegisterUsers : AppCompatActivity() {
                         var name:String,var apellido:String,
                         var isAdmin:Boolean,
                         var lastLogin:String, var database:String,var uid:String)
-
-    fun createUser(){
+    fun createUserFireStore(){
         if(isFirst) {
             mydatabase = register_negocio.text.toString()
         }
@@ -85,15 +90,36 @@ class RegisterUsers : AppCompatActivity() {
             var phone = register_phone.text.toString();var isAdmin = register_isAdmin.isChecked
 
             auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
-               var uid = it.user?.uid.toString()
-                var db = Firebase.database.getReference("Usuarios").child(uid)
-                db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                var uid = it.user?.uid.toString()
+                //var db = Firebase.database.getReference("Usuarios").child(uid)
+                var db = fireData.collection("db1").document("Usuarios").collection("Usuarios").document(uid)
+                if(isFirst){
+                    //db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                    db.set(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+
+                }
+                else{
+                    //db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
+                    db.set(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
+                }
                 //Registrar en su respectiva base de datos
                 /***** Realizar cambio aqui ****/
-                var bussinesdb= Firebase.database.getReference("$mydatabase~$uid").child("Usuarios").child(uid)
-                bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
 
-               makeToast("Usuario registrado con exito")
+                if (isFirst){
+                    //var bussinesdb= Firebase.database.getReference("$mydatabase~$uid").child("Usuarios").child(uid)
+                    var bussinesdb = fireData.collection("db1").document("$mydatabase~$uid").collection("Usuarios").document(uid)
+                    bussinesdb.set(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                    //bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                }
+                else{
+                    //var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
+                    var bussinesdb = fireData.collection("db1").document(mydatabase).collection("Usuarios").document(uid)
+                    //bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
+                    bussinesdb.set(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
+
+                }
+
+                makeToast("Usuario registrado con exito")
                 if (mInterstitialAd != null) {
                     mInterstitialAd?.show(this)
                 }else{println("El anuncio esta cargando")}
@@ -113,6 +139,7 @@ class RegisterUsers : AppCompatActivity() {
 
         }else{makeToast("Faltan campos por completar")}
     }
+
 
     fun checkFields():Boolean{
         return register_name.text.toString().isNotEmpty() && register_last.text.toString().isNotEmpty()

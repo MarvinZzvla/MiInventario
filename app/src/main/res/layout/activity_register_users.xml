@@ -84,12 +84,13 @@
                 android:id="@+id/register_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="number"
                 android:hint="Telefono"/>
 
             <EditText
                 android:id="@+id/register_negocio"
                 android:hint="Nombre de su negocio"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <CheckBox

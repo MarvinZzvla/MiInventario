@@ -6,14 +6,17 @@ import android.content.Intent
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.vendetta.miinventario.EditarProducto
 import com.vendetta.miinventario.R
 
 class ProductosViewHolder (view: View): RecyclerView.ViewHolder(view) {
+    private val fireData = Firebase.firestore
 
     var productoName = view.findViewById<TextView>(R.id.producto_item_title)
     var productoPrecio = view.findViewById<TextView>(R.id.producto_item_precio)
@@ -40,7 +43,10 @@ class ProductosViewHolder (view: View): RecyclerView.ViewHolder(view) {
             builder.apply {
                 setPositiveButton("Si",
                     DialogInterface.OnClickListener { dialog, id ->
-                        Firebase.database.getReference(database).child("Productos").child(productos.name).removeValue()
+                        fireData.collection("db1").document(database).collection("Productos").document(productos.name).delete().addOnSuccessListener {
+                            Toast.makeText(builder.context,"Eliminado con exito", Toast.LENGTH_SHORT).show()
+                        }
+                        //Firebase.database.getReference(database).child("Productos").child(productos.name).removeValue()
                     })
                 setNegativeButton("No",
                     DialogInterface.OnClickListener { dialog, id ->
