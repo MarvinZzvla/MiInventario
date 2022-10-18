@@ -126,6 +126,7 @@ class VentasHome : AppCompatActivity() {
         }
     }
 
+
     @RequiresApi(Build.VERSION_CODES.N)
     fun getVentas(){
 

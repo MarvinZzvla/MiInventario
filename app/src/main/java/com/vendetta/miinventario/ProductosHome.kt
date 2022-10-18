@@ -4,16 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.SearchView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -27,6 +24,7 @@ private var list = arrayListOf<QuerySnapshot>()
 var productosProviderList = arrayListOf<Productos>()
 
 class ProductosHome : AppCompatActivity() {
+    var searchTxt = ""
     @RequiresApi(Build.VERSION_CODES.N)
     private val fireData = Firebase.firestore
     @RequiresApi(Build.VERSION_CODES.N)
@@ -37,11 +35,38 @@ class ProductosHome : AppCompatActivity() {
         banner_productos.loadAd(AdRequest.Builder().build())
         loadPreferences()
         getProductos()
+        searchBar()
+
 
         btnCrearProducto.setOnClickListener {
+
             Intent(this,NuevoProducto::class.java).apply { startActivity(this) }
         }
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun searchBar(){
+    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+
+        override fun onQueryTextSubmit(query: String?): Boolean {
+            searchTxt = query?:""
+            searchTxt = searchTxt.lowercase()
+            providerProductos()
+            return false
+        }
+
+        override fun onQueryTextChange(newText: String?): Boolean {
+                searchTxt = newText?:""
+                searchTxt = searchTxt.lowercase()
+                providerProductos()
+
+            return false
+        }
+
+    })
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun getProductos(){
@@ -60,13 +85,26 @@ class ProductosHome : AppCompatActivity() {
         productosProviderList.clear()
         for(producto in list[0].documents){
             val p = producto.data
+
             productosProviderList.add(Productos(p?.get("name").toString(),p?.get("precio").toString(),
                 "Cantidad: ${p?.get("cantidad").toString()}"))
-
         }
+/** Buscador implementado **/
+        if(searchTxt.isNotEmpty()){
+            var tmplist = arrayListOf<Productos>()
+            for (p in productosProviderList){
+                if(p.name.lowercase().contains(searchTxt)){
+                    tmplist.add(p)
+                }
+            }
+            productosProviderList.clear()
+            productosProviderList.addAll(tmplist)
+        }
+        /**Ordenar lista ***/
         productosProviderList.sortBy {
-            it.cantidad.reversed()
+            it.name
         }
+
 
         initRecycleView()
     }

@@ -45,6 +45,11 @@ class RegisterUsers : AppCompatActivity() {
             createUserFireStore()
         }
     }
+    fun createTest(){
+        auth.createUserWithEmailAndPassword("prueba1@gmail.com","tomasa12").addOnSuccessListener {
+            println("Garabado con exito")
+        }
+    }
 
     fun loadAdFullScreen(){
         var adRequest = AdRequest.Builder().build()
@@ -90,6 +95,7 @@ class RegisterUsers : AppCompatActivity() {
             var phone = register_phone.text.toString();var isAdmin = register_isAdmin.isChecked
 
             auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
+                println("Estamos Creando ... ")
                 var uid = it.user?.uid.toString()
                 //var db = Firebase.database.getReference("Usuarios").child(uid)
                 var db = fireData.collection("db1").document("Usuarios").collection("Usuarios").document(uid)
@@ -123,7 +129,10 @@ class RegisterUsers : AppCompatActivity() {
                 if (mInterstitialAd != null) {
                     mInterstitialAd?.show(this)
                 }else{println("El anuncio esta cargando")}
-            }
+            }.addOnFailureListener {
+                println("Esta es la excepcion" + it.message)
+            }//END LISTENER
+
             if(isFirst){
                 if(auth.currentUser != null){
                     auth.signOut()
@@ -158,5 +167,7 @@ class RegisterUsers : AppCompatActivity() {
                 mydatabase = this.getString("database", "null").toString()
             }
         }
+        println("Base de datos:"+mydatabase)
+
     }
 }

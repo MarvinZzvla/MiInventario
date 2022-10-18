@@ -109,7 +109,7 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         }
         //Obtener ganancias y sumarles las nuevas ganancias del dia de hoy
         fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
-            if(!it.exists()){countDay = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad }
+            if(it.data?.get("ganancias")==null){countDay = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad }
             else{ countDay = it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)}
             fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(hashMapOf("ganancias" to countDay.toString()),
                 SetOptions.merge())
@@ -118,10 +118,11 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
             fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").get().addOnSuccessListener {
                 if(!it.exists()){countMonth = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad}
                 else{countMonth= it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)}
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").set(hashMapOf("ganancias" to countMonth.toString()))
+                println("Esta es el mensual"+countMonth)
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").set(hashMapOf("ganancias" to countMonth.toString()), SetOptions.merge())
 
                 fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
-                    if(!it.exists()){countYear = (ventas.venta_precio.toString().toInt() + precioProduccion) * cantidad}
+                    if(it.data?.get("ganancias")==null){countYear = (ventas.venta_precio.toString().toInt() + precioProduccion) * cantidad}
                     else{countYear = it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)}
                     println("Esta es la cantidad: " + countYear)
                     fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(hashMapOf("ganancias" to countYear.toString()), SetOptions.merge())
@@ -147,11 +148,11 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
             var count = it.data?.get("cantidad").toString().toInt()
             count += cantidad
             fireData.collection("db1").document(database).collection("Productos").document(ventas.venta_name).update("cantidad",count.toString())
-        }
+
 
         //Get ventas del dia
         fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
-            if(!it.exists()){ countDay = ventas.venta_precio.toInt()*cantidad }
+            if(it.data?.get("ventas") == null){ countDay = ventas.venta_precio.toInt()*cantidad }
             else{ countDay = it.data?.get("ventas").toString().toInt() - ventas.venta_precio.toInt() * cantidad }
             //Finanzas del dia -Set Ventas del dia
             fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
@@ -166,13 +167,14 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
 
                 //Get finanzas del año
                 fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
-                    if(!it.exists()){countYear = ventas.venta_precio.toInt()* cantidad}
+                    if(it.data?.get("ventas") == null){countYear = ventas.venta_precio.toInt()* cantidad}
                     else{ countYear = it.data?.get("ventas").toString().toInt() - (ventas.venta_precio.toInt() * cantidad)}
                     fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
                         hashMapOf("ventas" to countYear.toString()))
 
                 }
             }
+        }
         }
 
     }

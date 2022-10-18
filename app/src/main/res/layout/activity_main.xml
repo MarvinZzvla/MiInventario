@@ -55,11 +55,13 @@
             android:layout_width="match_parent"
             android:background="@drawable/bg_form"
             android:layout_height="match_parent"
-            android:padding="20dp">
+            android:padding="20dp"
+            tools:ignore="ExtraText">
         <EditText
             android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
             android:hint="Email"
             android:textColorHighlight="#80018786"
             android:textColor="@color/black"/>
@@ -81,6 +83,14 @@
                 android:text="Entrar"
                 android:background="@drawable/bg_button"
                 />
+            <TextView
+                android:id="@+id/forgetPass"
+                android:textColor="#03A9F4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="¿Olvidastes tu contraseña?"/>
         </LinearLayout>
     </LinearLayout>
 

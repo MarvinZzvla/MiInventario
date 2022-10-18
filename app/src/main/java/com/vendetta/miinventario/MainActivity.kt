@@ -49,6 +49,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        /**** OLVIDASTES TU CONTRASEÑA ******/
+        forgetPass.setOnClickListener {
+            Intent(this,RecoverPass::class.java).apply {
+                startActivity(this)
+            }
+        }
+
 
     }//end on create
 
@@ -119,6 +126,8 @@ class MainActivity : AppCompatActivity() {
             if (it.isSuccessful){
 
                 getReference()
+                Firebase.firestore.collection("db1").document("Usuarios").collection("Usuarios").document(auth.currentUser?.uid.toString())
+                    .update("password",pass)
             }
             else{
                 btn_login.isClickable = true

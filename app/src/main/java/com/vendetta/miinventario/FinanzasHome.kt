@@ -20,7 +20,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class FinanzasHome : AppCompatActivity() {
-    @RequiresApi(Build.VERSION_CODES.N)
     private var daySelected = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
     private var monthSelected = (Calendar.getInstance().get(Calendar.MONTH)+1).toString()
     private var yearSelected = Calendar.getInstance().get(Calendar.YEAR).toString()
@@ -31,14 +30,13 @@ class FinanzasHome : AppCompatActivity() {
     val fireData = Firebase.firestore
     var ventasYear = "0"; var gananciasYear = "0"; var ventasMonth = "0"; var gananciasMonth = "0"; var ventasToday ="0"; var gananciasToday="0"
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_finanzas_home)
         banner_finanzas.loadAd(AdRequest.Builder().build())
         loadPreferences()
         initCalendar()
-        loadInfoDatabase()
+
 
         showGanancias.setOnClickListener {
             if (showGanancias.isChecked){
@@ -51,42 +49,39 @@ class FinanzasHome : AppCompatActivity() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onStart() {
         super.onStart()
+        loadInfoDatabase()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun loadInfoDatabase(){
         readFireStore()
+
     }
-    fun createDefaultFinanzas(){
-        fireData.collection("db1").document(database).collection("Finanzas")
-    }
-    @RequiresApi(Build.VERSION_CODES.N)
+
+
+
     fun readFireStore(){
-        fireData.collection("db1").document(database).collection("Finanzas").document(yearSelected).get().addOnSuccessListener {
 
-            ventasYear = (it.data?.get("ventas")?:"0").toString()
-            gananciasYear = (it.data?.get("ganancias")?:"0").toString()
-            fireData.collection("db1").document(database).collection("Finanzas")
-                .document(yearSelected).collection(monthSelected).document("ventas").get()
-                .addOnSuccessListener {
-                    ventasMonth = it.data?.get("ventas").toString()
-                    if (ventasMonth == "null") {
-                        ventasMonth = "0"
-                    }
+        fireData.collection("db1").document(database).collection("Finanzas").document(yearSelected).addSnapshotListener { it, error ->
 
-                    fireData.collection("db1").document(database).collection("Finanzas").document("$yearSelected/$monthSelected/$daySelected").get().addOnSuccessListener {
-                        ventasToday = it.data?.get("ventas").toString()
+            ventasYear = (it?.data?.get("ventas")?:"0").toString()
+            gananciasYear = (it?.data?.get("ganancias")?:"0").toString()
+
+            fireData.collection("db1").document(database).collection("Finanzas").document(yearSelected).collection(monthSelected).document("ventas").addSnapshotListener { it, error ->
+                    ventasMonth = it?.data?.get("ventas").toString()
+                    if (ventasMonth == "null") { ventasMonth = "0" }
+
+                    fireData.collection("db1").document(database).collection("Finanzas").document("$yearSelected/$monthSelected/$daySelected").addSnapshotListener { it, error ->
+                        ventasToday = it?.data?.get("ventas").toString()
                         if(ventasToday == "null"){ventasToday="0"}
 
-                        fireData.collection("db1").document(database).collection("Finanzas").document(yearSelected).collection(monthSelected).document("ganancias").get().addOnSuccessListener {
-                            gananciasMonth = it.data?.get("ganancias").toString()
+                        fireData.collection("db1").document(database).collection("Finanzas").document(yearSelected).collection(monthSelected).document("ganancias").addSnapshotListener { it, error ->
+                            gananciasMonth = it?.data?.get("ganancias").toString()
                             if(gananciasMonth == "null"){gananciasMonth = "0"}
 
-                            fireData.collection("db1").document(database).collection("Finanzas").document("$yearSelected/$monthSelected/$daySelected").get().addOnSuccessListener {
-                                gananciasToday = it.data?.get("ganancias").toString()
+                            fireData.collection("db1").document(database).collection("Finanzas").document("$yearSelected/$monthSelected/$daySelected").addSnapshotListener { it, error ->
+                                gananciasToday = it?.data?.get("ganancias").toString()
                                 if(gananciasToday == "null"){gananciasToday = "0"}
                                 readInfo()
                             }
@@ -102,7 +97,6 @@ class FinanzasHome : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    @RequiresApi(Build.VERSION_CODES.N)
     fun readInfo(){
 
         fechaHoyFinanzas.text = "$daySelected/$monthSelected/$yearSelected"
@@ -123,7 +117,6 @@ class FinanzasHome : AppCompatActivity() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun initCalendar() {
         var myCalendar = Calendar.getInstance()
         var datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->

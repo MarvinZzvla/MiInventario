@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -22,6 +23,7 @@ class NuevoProducto : AppCompatActivity() {
         setContentView(R.layout.activity_nuevo_producto)
         auth = Firebase.auth
         loadPreferences()
+        banner_nuevoProducto.loadAd(AdRequest.Builder().build())
 
         crearNuevoProducto_btn.setOnClickListener {
             if (checkFields()){

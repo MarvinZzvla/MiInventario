@@ -28,6 +28,7 @@ class ProductosViewHolder (view: View): RecyclerView.ViewHolder(view) {
         productoName.text = productos.name
         productoPrecio.text = productos.precio
         productoCantidad.text = productos.cantidad
+
         deleteProducto.setOnClickListener{
             showAlertDialog(productos, database)
 
