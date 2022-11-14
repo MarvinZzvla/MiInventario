@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         MobileAds.initialize(this) {}
+        banner_main.loadAd(AdRequest.Builder().build())
 
         //Boton de login
         btn_login.setOnClickListener {

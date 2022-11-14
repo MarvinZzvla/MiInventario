@@ -51,6 +51,7 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         var month = ""
         var year = ""
 
+        println("Este es el precio venta " + ventas.venta_precio)
         //4/09/2022 - 2:57:33
         date.apply {
             this.split(" - ").apply {
@@ -97,38 +98,75 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         year: String,
         ventas: Ventas
     ) {
-        var countDay = 0; var countMonth = 0; var countYear = 0;
+        var countDay = 0;
+        var countMonth = 0;
+        var countYear = 0;
         var precioProduccion = 0
         var dateMonth = "${year}/${month}"
         var dateYear = "${year}"
         var cantidad = ventasCantidad.text.toString().toInt()
 
         //Obtener el precio produccion del producto
-        fireData.collection("db1").document(database).collection("Productos").document(ventas.venta_name).get().addOnSuccessListener {
+        fireData.collection("db1").document(database).collection("Productos")
+            .document(ventas.venta_name).get().addOnSuccessListener {
             precioProduccion = it.data?.get("precio").toString().toInt()
-        }
+
         //Obtener ganancias y sumarles las nuevas ganancias del dia de hoy
-        fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
-            if(it.data?.get("ganancias")==null){countDay = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad }
-            else{ countDay = it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)}
-            fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(hashMapOf("ganancias" to countDay.toString()),
-                SetOptions.merge())
+        fireData.collection("db1").document(database).collection("Finanzas").document(dateToday)
+            .get().addOnSuccessListener {
+            if (it.data?.get("ganancias") == null) {
+                countDay = (ventas.venta_precio.toString().toInt() + precioProduccion) * cantidad
+            } else {
+                countDay =
+                    it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString()
+                        .toInt() - precioProduccion) * cantidad)
+            }
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateToday)
+                .set(
+                    hashMapOf("ganancias" to countDay.toString()),
+                    SetOptions.merge()
+                )
 
             //Obtener las ganancias del mes y sumarles las nuevas ganancias del dia de hoy
-            fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").get().addOnSuccessListener {
-                if(!it.exists()){countMonth = (ventas.venta_precio.toString().toInt() + precioProduccion)*cantidad}
-                else{countMonth= it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)}
-                println("Esta es el mensual"+countMonth)
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").set(hashMapOf("ganancias" to countMonth.toString()), SetOptions.merge())
+            fireData.collection("db1").document(database).collection("Finanzas")
+                .document(dateMonth + "/ganancias").get().addOnSuccessListener {
+                var combined = 0
+                if (!it.exists()) {
+                    countMonth =
+                        (ventas.venta_precio.toString().toInt() + precioProduccion) * cantidad
+                } else {
+                    var actual = it.data?.get("ganancias").toString().toInt()
+                    var precio =
+                        (ventas.venta_precio.toString().toInt() - precioProduccion) * cantidad
+                    println("Actual: " + actual + "Precio: " + precio)
+                    combined = actual - precio
+                    countMonth = it.data?.get("ganancias").toString()
+                        .toInt() - ((ventas.venta_precio.toString()
+                        .toInt() - precioProduccion) * cantidad)
+                }
+                println("Esta es el mensual " + countMonth + "  " + combined)
+                fireData.collection("db1").document(database).collection("Finanzas")
+                    .document(dateMonth + "/ganancias")
+                    .set(hashMapOf("ganancias" to countMonth.toString()), SetOptions.merge())
 
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
-                    if(it.data?.get("ganancias")==null){countYear = (ventas.venta_precio.toString().toInt() + precioProduccion) * cantidad}
-                    else{countYear = it.data?.get("ganancias").toString().toInt() - ((ventas.venta_precio.toString().toInt() - precioProduccion)*cantidad)}
+                fireData.collection("db1").document(database).collection("Finanzas")
+                    .document(dateYear).get().addOnSuccessListener {
+                    if (it.data?.get("ganancias") == null) {
+                        countYear =
+                            (ventas.venta_precio.toString().toInt() + precioProduccion) * cantidad
+                    } else {
+                        countYear = it.data?.get("ganancias").toString()
+                            .toInt() - ((ventas.venta_precio.toString()
+                            .toInt() - precioProduccion) * cantidad)
+                    }
                     println("Esta es la cantidad: " + countYear)
-                    fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(hashMapOf("ganancias" to countYear.toString()), SetOptions.merge())
+                    fireData.collection("db1").document(database).collection("Finanzas")
+                        .document(dateYear)
+                        .set(hashMapOf("ganancias" to countYear.toString()), SetOptions.merge())
                 }
             }
         }
+    }
     }
 
     fun updateFinanzasFire(

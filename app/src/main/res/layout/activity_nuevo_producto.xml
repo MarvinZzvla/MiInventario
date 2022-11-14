@@ -55,7 +55,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Costo por producción de una unidad | Precio base"
+                android:text="Costo por producción de una unidad | Precio base\nEjemplo: $3 me sale a mi producir o comprar este producto o servicio\nEs diferente del precio de venta al publico"
                 />
 
             <EditText
@@ -63,7 +63,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:hint="Precio" />
+                android:hint="Precio Base" />
+
+            <TextView
+                android:id="@+id/calBasePrecio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="italic   "
+                android:text="Calculadora de precio base o unidad (Pulsa aqui)"
+                android:textColor="#03A9F4"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

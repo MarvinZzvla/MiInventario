@@ -33,6 +33,10 @@ class NuevoProducto : AppCompatActivity() {
             }
 
         }
+
+        calBasePrecio.setOnClickListener {
+            Intent(this,CalculadoraBase::class.java).apply { startActivity(this) }
+        }
     }
 
     fun createProducto(){
@@ -51,5 +55,10 @@ class NuevoProducto : AppCompatActivity() {
         getSharedPreferences("login_prefs", Context.MODE_PRIVATE).apply {
             database = this.getString("database","null").toString()
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Intent(this,ProductosHome::class.java).apply { startActivity(this) }
     }
 }
