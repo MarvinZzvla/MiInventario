@@ -15,6 +15,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".InfoScreen"
+            android:exported="false" />
+        <activity
             android:name=".CalculadoraBase"
             android:exported="false" />
         <activity

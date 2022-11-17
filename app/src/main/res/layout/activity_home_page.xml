@@ -42,12 +42,13 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_margin="15dp"
-        app:layout_constraintVertical_bias="0.05"
         android:background="@drawable/bg_form"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/database_name" />
+        app:layout_constraintTop_toBottomOf="@+id/database_name"
+        app:layout_constraintVertical_bias="0.04" />
 
     <TextView
         android:layout_width="0dp"
@@ -126,14 +127,43 @@
         app:layout_constraintTop_toBottomOf="@+id/finanzas_btn"
         app:layout_constraintVertical_bias="0.05" />
 
+    <ImageButton
+        android:id="@+id/info_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:visibility="gone"
+        android:background="@drawable/bg_button_red"
+        app:layout_constraintBottom_toTopOf="@+id/adViewHome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usuarios_btn"
+        app:layout_constraintVertical_bias="0.05" />
+
     <TextView
+        android:id="@+id/textView23"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="Notificacion importante!"
         android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:visibility="gone"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/info_btn"
+        app:layout_constraintEnd_toEndOf="@+id/info_btn"
+        app:layout_constraintStart_toStartOf="@+id/info_btn"
+        app:layout_constraintTop_toTopOf="@+id/info_btn" />
+
+    <TextView
+        android:id="@+id/textView22"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Usuarios"
+        android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="20dp"
         android:textStyle="bold"
-        android:text="Usuarios"
-        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/usuarios_btn"
         app:layout_constraintEnd_toEndOf="@+id/usuarios_btn"
         app:layout_constraintStart_toStartOf="@+id/usuarios_btn"
@@ -150,6 +180,31 @@
         app:layout_constraintBottom_toTopOf="@+id/btn_logout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/reviewButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/rating"
+        android:text="Review"
+        app:layout_constraintBottom_toTopOf="@+id/adViewHome"
+        app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
+
+    <TextView
+        android:id="@+id/calificanosText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="Calificanos"
+        app:layout_constraintHorizontal_bias="0.92"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reviewButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

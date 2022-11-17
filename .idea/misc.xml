@@ -21,12 +21,14 @@
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/layout/usuario_card_layout.xml" value="0.33" />
         <entry key="..\:/Users/PC/AndroidStudioProjects/MiInventario/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/drawable/bg_app.xml" value="0.332" />
+        <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/drawable/bg_buttonRed.xml" value="0.275" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/drawable/ic_protruding_squares.xml" value="0.332" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/drawable/ic_radiant_gradient.xml" value="0.196" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_calculadora_base.xml" value="0.33" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_editar_producto.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_finanzas_home.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_home_page.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_home_page.xml" value="0.33" />
+        <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_info_screen.xml" value="0.2703125" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_nueva_venta.xml" value="0.25" />
         <entry key="..\:/Users/Zavala/AndroidStudioProjects/MiInventario/app/src/main/res/layout/activity_nuevo_producto.xml" value="0.33" />
