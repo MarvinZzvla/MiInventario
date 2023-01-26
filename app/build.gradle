@@ -12,8 +12,8 @@ android {
         applicationId "com.vendetta.miinventario"
         minSdk 24
         targetSdk 33
-        versionCode 15
-        versionName "3.7"
+        versionCode 18
+        versionName "3.99"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,5 +55,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-config-ktx'
 
     implementation("com.google.android.play:review-ktx:2.0.0")
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation("com.android.billingclient:billing-ktx:5.0.0")
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 
 }

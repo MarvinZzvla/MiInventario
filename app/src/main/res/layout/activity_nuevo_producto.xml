@@ -30,7 +30,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.2"
         android:layout_margin="20dp"
-
         android:orientation="vertical">
 
         <LinearLayout
@@ -41,11 +40,35 @@
             android:padding="10dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
+                android:theme="@style/Theme.AppCompat.Light"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre"
-                />
+                android:background="@drawable/bg_form"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nombre"
+                    />
+
+                <TextView
+                    android:id="@+id/scanText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Escanea tu codigo!"
+                    android:textColor="#D50909"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="5dp"/>
+
+                <ImageView
+                    android:id="@+id/barCode_btn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/barcode"/>
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/nuevoNameProducto"
@@ -84,6 +107,17 @@
                 android:layout_height="wrap_content"
                 android:hint="Cantidad"
                 android:inputType="number"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Código de barras"
+                />
+
+            <EditText
+                android:id="@+id/nuevoBarCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Código de Barras"/>
 
             <Button
                 android:id="@+id/crearNuevoProducto_btn"
@@ -109,4 +143,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

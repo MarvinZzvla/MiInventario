@@ -51,6 +51,7 @@ class VentasViewHolder(view: View):RecyclerView.ViewHolder(view) {
         var month = ""
         var year = ""
 
+
         println("Este es el precio venta " + ventas.venta_precio)
         //4/09/2022 - 2:57:33
         date.apply {

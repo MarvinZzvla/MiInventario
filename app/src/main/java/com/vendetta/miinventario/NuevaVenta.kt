@@ -16,7 +16,11 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.android.synthetic.main.activity_nueva_venta.*
+import kotlinx.android.synthetic.main.activity_nuevo_producto.*
 import java.util.*
 
 
@@ -24,6 +28,7 @@ class NuevaVenta : AppCompatActivity() {
     var database = ""
     var producto = ""
     var date = ""
+    private var barCode = ""
 
     var cantidad = 1;
     private var mInterstitialAd: InterstitialAd? = null
@@ -37,29 +42,85 @@ class NuevaVenta : AppCompatActivity() {
         banner_nuevaVenta.loadAd(AdRequest.Builder().build())
         loadAdFullScreen()
 
-
         crearNuevaVenta_btn.setOnClickListener {
-            cantidad = 1
-            if(nuevaCantidad_ventas.text.isNotEmpty()){
-                if(nuevaCantidad_ventas.text.toString().toInt() <= 0){
-                    cantidad = 1
-                }
-                else {
-                    cantidad = nuevaCantidad_ventas.text.toString().toInt()
-                }
-            }
+            checkQuantity()
 
-            /*****NUEVA BASE DE DATOS******/
-            fireData.collection("db1").document(database).collection("Productos").document(producto).get().addOnSuccessListener {
-                var cantidadDisponible = it.data?.get("cantidad").toString().toInt()
-                println("Cantidad disponible" + it.data?.get("cantidad").toString())
-                if (cantidadDisponible >= cantidad){
-                    CrearBaseDatos()
-                }
-                else{Toast.makeText(this,"Cantidad Insuficiente de este producto, tienes: $cantidadDisponible $producto",Toast.LENGTH_SHORT).show()}
+        }
+
+        barCodeVentas_btn.setOnClickListener {
+
+            initCodeScan()
+        }
+
+    }
+
+    private fun checkQuantity() {
+        cantidad = 1
+
+        if(nuevaCantidad_ventas.text.isNotEmpty()){
+            if(nuevaCantidad_ventas.text.toString().toInt() <= 0){
+                cantidad = 1
+            }
+            else {
+                cantidad = nuevaCantidad_ventas.text.toString().toInt()
             }
         }
 
+        /*****NUEVA BASE DE DATOS******/
+        fireData.collection("db1").document(database).collection("Productos").document(producto).get().addOnSuccessListener {
+            var cantidadDisponible = it.data?.get("cantidad").toString().toInt()
+            println("Cantidad disponible" + it.data?.get("cantidad").toString())
+            if (cantidadDisponible >= cantidad){
+                CrearBaseDatos()
+            }
+            else{Toast.makeText(this,"Cantidad Insuficiente de este producto, tienes: $cantidadDisponible $producto",Toast.LENGTH_SHORT).show()}
+        }
+    }
+
+
+    private fun initCodeScan() {
+        ScanOptions().apply {
+            this.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
+            this.setPrompt("Presiona subir volumen para encender la linterna y bajar volumen para apagarla")
+            this.setCameraId(0)
+            this.setBeepEnabled(true)
+
+            this.setBarcodeImageEnabled(true)
+
+            barcodeLauncher.launch(this)
+        }
+    }
+
+    private val barcodeLauncher = registerForActivityResult(
+        ScanContract()
+    ) { result: ScanIntentResult ->
+
+        if (result != null){
+            if (result.contents == null){
+                Toast.makeText(this,"Lectura cancelada",Toast.LENGTH_SHORT).show()
+            }
+            else{
+                barCode = result.contents
+                fireData.collection("db1").document(database).collection("Productos").whereEqualTo("barCode",barCode).get().addOnSuccessListener {
+                    for(document in it.documents){
+                        nuevaVenta_Name.text = Editable.Factory.getInstance().newEditable(document.data?.get("name").toString())
+                        producto = nuevaVenta_Name.text.toString()
+                    }
+                    if(!it.isEmpty) {
+                        nuevaVenta_Name.visibility = View.VISIBLE
+                        spinner_productos.visibility = View.GONE
+                        Toast.makeText(this,"Lectura exitosa: ${result.contents}",Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        nuevaVenta_Name.visibility = View.GONE
+                        spinner_productos.visibility = View.VISIBLE
+                        Toast.makeText(this,"No fue encontrado ningun producto", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }else{
+            Toast.makeText(this,"Ocurrio un error inesperado", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onStart() {
@@ -67,7 +128,7 @@ class NuevaVenta : AppCompatActivity() {
         loadPreferences()
         readData()
         loadCalendar()
-
+        barCode = ""
         nuevaFecha_ventas.isFocusable = false
     }
 
@@ -133,10 +194,15 @@ class NuevaVenta : AppCompatActivity() {
             spinner_productos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     producto = listProductos[p2]
+                    if(barCode != ""){
+                        producto = nuevaVenta_Name.text.toString()
+                    }
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-
+                    if(barCode == ""){
+                        Toast.makeText(nuevaVenta_Name.context,"Ingresa un producto primero",Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -168,6 +234,8 @@ class NuevaVenta : AppCompatActivity() {
         timeNow.split(" - ").apply {
             timeNow = this[1]
         }
+
+        println("Este es el producto: " + producto)
 
         if(checkFields()) {
             //Si la venta se realizo

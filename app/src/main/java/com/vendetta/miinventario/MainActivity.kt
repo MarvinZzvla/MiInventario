@@ -36,6 +36,11 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this) {}
         banner_main.loadAd(AdRequest.Builder().build())
 
+        Intent(this,RegisterUsers::class.java).apply {
+            putExtra("isFirst",true)
+            startActivity(this)
+        }
+
         //Boton de login
         btn_login.setOnClickListener {
             //Se desactiva despues de dar un click
@@ -109,9 +114,11 @@ class MainActivity : AppCompatActivity() {
             else{makeToast("Rellene los campos")}
         }
         else{
-            println("Usuario loogeado con exito")
+            println("Usuario loogeado con exito " + auth.currentUser?.email)
             auth.signOut()
-            loginFirebase()
+            if(checkFields()) {
+                loginFirebase()
+            }
         }
     }
 
@@ -126,7 +133,6 @@ class MainActivity : AppCompatActivity() {
         btn_login.isEnabled = false
         auth.signInWithEmailAndPassword(email,pass).addOnCompleteListener {
             if (it.isSuccessful){
-
                 getReference()
                 Firebase.firestore.collection("db1").document("Usuarios").collection("Usuarios").document(auth.currentUser?.uid.toString())
                     .update("password",pass)
@@ -136,6 +142,8 @@ class MainActivity : AppCompatActivity() {
                 btn_login.isEnabled = true
                 makeToast("Correo o contraseña invalidos")
             }
+        }.addOnFailureListener {
+            println("Esta es la excepcion " + it.message)
         }
     }
 

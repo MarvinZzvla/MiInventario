@@ -19,6 +19,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_register_users.*
 private lateinit var auth: FirebaseAuth
 private var mydatabase = ""
+private var myUid=""
 private var isFirst = false
 class RegisterUsers : AppCompatActivity() {
 
@@ -38,18 +39,18 @@ class RegisterUsers : AppCompatActivity() {
             register_isAdmin.isChecked = true;
             register_isAdmin.visibility = android.view.View.INVISIBLE
 
+
         }
 
         btn_register.setOnClickListener {
             //createUser()
             createUserFireStore()
         }
-    }
-    fun createTest(){
-        auth.createUserWithEmailAndPassword("prueba1@gmail.com","tomasa12").addOnSuccessListener {
-            println("Garabado con exito")
+        btn_hasAccount.setOnClickListener {
+            onBackPressed()
         }
     }
+
 
     fun loadAdFullScreen(){
         var adRequest = AdRequest.Builder().build()
@@ -97,6 +98,7 @@ class RegisterUsers : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
                 println("Estamos Creando ... ")
                 var uid = it.user?.uid.toString()
+                myUid = uid
                 //var db = Firebase.database.getReference("Usuarios").child(uid)
                 var db = fireData.collection("db1").document("Usuarios").collection("Usuarios").document(uid)
                 if(isFirst){
@@ -134,11 +136,14 @@ class RegisterUsers : AppCompatActivity() {
             }//END LISTENER
 
             if(isFirst){
-                if(auth.currentUser != null){
+               /* if(auth.currentUser != null){
                     auth.signOut()
-                }
+                }*/
                 var prefs = getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit()
-                prefs.clear()
+                prefs.putBoolean("isLogin", true)
+                prefs.putString("database","$mydatabase~$myUid")
+                prefs.putBoolean("isAdmin", isAdmin as Boolean)
+                prefs.putString("name", "${register_name.toString()} ${register_last.toString()}")
                 prefs.apply()
                 Intent(this,MainActivity::class.java).apply { startActivity(this) }
             }

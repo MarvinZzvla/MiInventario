@@ -2,25 +2,26 @@ package com.vendetta.miinventario
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.billingclient.api.*
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.common.collect.ImmutableList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.get
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.android.synthetic.main.activity_home_page.*
-import org.json.JSONArray
-import kotlin.system.exitProcess
+import android.app.Activity
+import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 
 
 private lateinit var auth: FirebaseAuth
@@ -31,6 +32,8 @@ private var backPressedline =0L;
 private var isRatingUs = false
 private var isShow = false
 private var infoScreenLink = ""; private var infoScreenBtnText = ""; private var infoScreenMsg = ""
+lateinit var billingClient:BillingClient
+var productDetailsList: MutableList<ProductDetails> = ArrayList()
 
 
 
@@ -38,6 +41,7 @@ class HomePage : AppCompatActivity() {
 
     lateinit var reviewInfo:ReviewInfo
     lateinit var manager:ReviewManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
@@ -45,6 +49,7 @@ class HomePage : AppCompatActivity() {
         loadPreferences()
         activateReviewInfo()
         setConfigRemote()
+        initializeBilling()
 
 
         var mAdView = adViewHome
@@ -60,20 +65,6 @@ class HomePage : AppCompatActivity() {
 
         info_btn.visibility = View.GONE
         textView23.visibility = View.GONE
-
-
-       /*
-        if(!isShow){
-            info_btn.visibility = View.GONE
-            textView23.visibility = View.GONE
-        } else{
-            info_btn.visibility = View.VISIBLE
-            textView23.visibility = View.VISIBLE
-            getSharedPreferences("login_prefs",Context.MODE_PRIVATE).edit().apply {
-                this.putBoolean("isInfoScreen",true)
-                this.apply()
-            }
-        }*/
 
         btn_logout.setOnClickListener {
             logout()
@@ -98,6 +89,10 @@ class HomePage : AppCompatActivity() {
             }
         }
 
+        buttonPay.setOnClickListener {
+            purchaseFlow()
+        }
+
 
         //Botenes principales
         //ventas
@@ -114,6 +109,93 @@ class HomePage : AppCompatActivity() {
 
     }
 
+    fun purchaseFlow(){
+        val activity : Activity = this;
+
+        val productDetailsParamsList = listOf(
+            BillingFlowParams.ProductDetailsParams.newBuilder()
+                // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
+                .setProductDetails(productDetailsList[0])
+                // to get an offer token, call ProductDetails.subscriptionOfferDetails()
+                // for a list of offers that are available to the user
+                .setOfferToken(productDetailsList[0].subscriptionOfferDetails?.get(0)?.offerToken.toString())
+                .build()
+        )
+
+        val billingFlowParams = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(productDetailsParamsList)
+            .build()
+
+// Launch the billing flow
+        val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+    }
+
+
+    private fun initializeBilling() {
+
+         billingClient = BillingClient.newBuilder(this)
+            .enablePendingPurchases()
+            .setListener(object :PurchasesUpdatedListener{
+                override fun onPurchasesUpdated(billingResult: BillingResult, list: MutableList<Purchase>?) {
+                    if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null){
+                        for (purchase in list) {
+
+                            //verifySubPurchase(purchase);
+
+                        }
+                    }
+                }
+
+            }).build()
+
+        //start the connection after initializing the billing client
+            establishConnection()
+    }
+
+    private fun establishConnection() {
+
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
+                    // The BillingClient is ready. You can query purchases here.
+                    showProducts();
+                }
+            }
+            override fun onBillingServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+                establishConnection();
+            }
+        })
+    }
+
+    private fun showProducts() {
+
+        val queryProductDetailsParams =
+            QueryProductDetailsParams.newBuilder()
+                .setProductList(
+                    ImmutableList.of(
+                        QueryProductDetailsParams.Product.newBuilder()
+                            .setProductId("remove_ads_mes")
+                            .setProductType(BillingClient.ProductType.SUBS)
+                            .build()))
+                .build()
+
+        billingClient.queryProductDetailsAsync(queryProductDetailsParams) {
+                billingResult,
+                productList ->
+
+            productDetailsList.clear()
+            productDetailsList.addAll(productList)
+
+            println("Este es el token" + productList[0].subscriptionOfferDetails?.get(0)?.offerToken)
+            // check billingResult
+            // process returned productDetailsList
+        }
+
+
+
+    }
 
     override fun onStart() {
         super.onStart()

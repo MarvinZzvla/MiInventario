@@ -36,12 +36,22 @@ class ProductosHome : AppCompatActivity() {
         loadPreferences()
         getProductos()
         searchBar()
+       // searchBarCode()
 
 
         btnCrearProducto.setOnClickListener {
 
             Intent(this,NuevoProducto::class.java).apply { startActivity(this) }
         }
+    }
+
+    private fun searchBarCode() {
+        val df = fireData.collection("db1").document(database).collection("Productos").whereEqualTo("barCode","17018081").get().addOnSuccessListener {
+            for(document in it.documents){
+                println("Esta es su consulta " + document.data?.get("name"))
+            }
+        }
+
     }
 
 
@@ -87,7 +97,7 @@ class ProductosHome : AppCompatActivity() {
             val p = producto.data
 
             productosProviderList.add(Productos(p?.get("name").toString(),p?.get("precio").toString(),
-                "Cantidad: ${p?.get("cantidad").toString()}"))
+                "Cantidad: ${p?.get("cantidad").toString()}",p?.get("barCode").toString()))
         }
 /** Buscador implementado **/
         if(searchTxt.isNotEmpty()){
