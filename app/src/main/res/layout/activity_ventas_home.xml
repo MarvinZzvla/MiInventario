@@ -77,4 +77,5 @@
         app:layout_constraintBottom_toTopOf="@id/adViewVentas"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

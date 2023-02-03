@@ -255,8 +255,6 @@ class NuevaVenta : AppCompatActivity() {
                 fireData.collection("db1").document(database).collection("Productos").document(producto).update("cantidad",actualCantidad)
             }
 
-           // updateFinanzasFire(dateToday)
-           // updateGanaciasFire(dateToday)
             updateFinanzas(dateToday)
             updateGanancias(dateToday)
 
@@ -267,6 +265,78 @@ class NuevaVenta : AppCompatActivity() {
             Toast.makeText(this,"Verifique todos los campos esten completos",Toast.LENGTH_SHORT).show()
         }
         }
+
+    fun updateFinanzas(dateToday: String) {
+        var countDay = 0; var countMonth = 0; var countYear = 0;
+        var dateMonth = "${myCalendar.time.year+1900}/${myCalendar.time.month + 1}"
+        var dateYear = "${myCalendar.time.year+1900}"
+
+        println("Paso por aqui")
+
+        /****YEAR****/
+        fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener{
+            println("Success Year")
+            countYear = nuevoPrecio_ventas.text.toString().toInt()* cantidad
+            if(!it.exists()){
+                println("No existe Año")
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
+                    hashMapOf("ventas" to countYear), SetOptions.merge())
+            }
+            else{
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear)
+                    .update("ventas",FieldValue.increment(countYear.toLong()))
+            }
+        }.addOnFailureListener {
+            countYear = nuevoPrecio_ventas.text.toString().toInt()* cantidad
+            println("Fallo Year" + countYear)
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateYear)
+                .set(hashMapOf("ventas" to countYear), SetOptions.merge())
+
+        }
+
+        /**** MES *****/
+        fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").get().addOnSuccessListener{
+            println("Success Mes")
+            countMonth = nuevoPrecio_ventas.text.toString().toInt() * cantidad
+            if (!it.exists()){
+                println("No existe mes")
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").set(
+                    hashMapOf("ventas" to countMonth))
+            }
+            else{
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas")
+                    .update("ventas",FieldValue.increment(countMonth.toLong()))
+            }
+        }
+            .addOnFailureListener {
+                countMonth = nuevoPrecio_ventas.text.toString().toInt() * cantidad
+                println("Fallo Mes" + countMonth)
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").set(
+                hashMapOf("ventas" to countMonth), SetOptions.merge()) }//END MES
+
+        /****TODAY ***/
+        fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
+            println("Success Dia")
+            countDay = nuevoPrecio_ventas.text.toString().toInt() * cantidad
+            if(!it.exists()){
+                println("No existe dia")
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
+                    hashMapOf("ventas" to countDay), SetOptions.merge())
+            }
+            else{
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateToday)
+                    .update("ventas",FieldValue.increment(countDay.toLong()))
+            }
+        }
+            .addOnFailureListener {
+                countDay = nuevoPrecio_ventas.text.toString().toInt() * cantidad
+                println("Fallo Day" + countDay)
+            fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
+                hashMapOf("ventas" to countDay), SetOptions.merge())
+            //updateFinanzas(dateToday)
+        } //END DAY
+
+    }
 
     fun updateGanancias(dateToday: String){
         var countDay = 0;
@@ -281,6 +351,23 @@ class NuevaVenta : AppCompatActivity() {
             .get().addOnSuccessListener {
                 precioProduccion = it.data?.get("precio").toString().toInt()
 
+                /*****YEAR *****/
+                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
+                    countYear = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad
+                    if(!it.exists()){
+                        fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
+                            hashMapOf("ganancias" to countYear), SetOptions.merge())
+                    }else{
+                        fireData.collection("db1").document(database).collection("Finanzas").document(dateYear)
+                            .update("ganancias",FieldValue.increment(countYear.toLong()))
+                    }
+                }.addOnFailureListener {
+                    println("Fallo ganancias year")
+                    countYear = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad
+                    fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
+                        hashMapOf("ganancias" to countYear), SetOptions.merge())
+                }
+
                 /*********MONTH ************/
                 fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").get().addOnSuccessListener {
                     countMonth = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad
@@ -292,23 +379,12 @@ class NuevaVenta : AppCompatActivity() {
                         fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias")
                             .update("ganancias",FieldValue.increment(countMonth.toLong()))
                     }
-
-                    /*****YEAR *****/
-                    fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener {
-                        countYear = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad
-                        if(!it.exists()){
-                            fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
-                                hashMapOf("ganancias" to countYear), SetOptions.merge())
-                        }else{
-                            fireData.collection("db1").document(database).collection("Finanzas").document(dateYear)
-                                .update("ganancias",FieldValue.increment(countYear.toLong()))
-                        }
-                    }.addOnFailureListener {
-                        println("Fallo ganancias year")
-                        fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
-                            hashMapOf("ganancias" to countYear), SetOptions.merge())
-                    }
-
+                }.addOnFailureListener {
+                    countMonth = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad
+                    fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").set(
+                        hashMapOf("ganancias" to countMonth), SetOptions.merge())
+//                    updateGanancias(dateToday)
+                }
 
                     /********* DAY *************/
                     fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
@@ -323,81 +399,16 @@ class NuevaVenta : AppCompatActivity() {
                         }
                     }.addOnFailureListener {
                         println("Fallo Ganancias Day")
+                        countDay = (nuevoPrecio_ventas.text.toString().toInt() - precioProduccion) * cantidad
                         fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
                             hashMapOf("ganancias" to countDay), SetOptions.merge())
                     }
 
-                }.addOnFailureListener {
-                    fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ganancias").set(
-                        hashMapOf("ganancias" to countMonth))
-                    updateGanancias(dateToday)
-                }
-
 
             }
     }
 
-    fun updateFinanzas(dateToday: String) {
-        var countDay = 0; var countMonth = 0; var countYear = 0;
-        var dateMonth = "${myCalendar.time.year+1900}/${myCalendar.time.month + 1}"
-        var dateYear = "${myCalendar.time.year+1900}"
 
-        println("Paso por aqui")
-
-        /****YEAR****/
-        fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).get().addOnSuccessListener{
-            println("Success")
-            countYear = nuevoPrecio_ventas.text.toString().toInt()* cantidad
-            if(!it.exists()){
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
-                    hashMapOf("ventas" to countYear), SetOptions.merge())
-            }
-            else{
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateYear)
-                    .update("ventas",FieldValue.increment(countYear.toLong()))
-            }
-        }.addOnFailureListener {
-            println("Fallo Year")
-            fireData.collection("db1").document(database).collection("Finanzas").document(dateYear).set(
-                hashMapOf("ventas" to countYear), SetOptions.merge())
-
-        }//END YEAR
-
-        /**** MES *****/
-        fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").get().addOnSuccessListener{
-            countMonth = nuevoPrecio_ventas.text.toString().toInt() * cantidad
-            if (!it.exists()){
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").set(
-                    hashMapOf("ventas" to countMonth))
-            }
-            else{
-                fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas")
-                    .update("ventas",FieldValue.increment(countMonth.toLong()))
-            }
-        }.addOnFailureListener {
-            println("Fallo Mes")
-            fireData.collection("db1").document(database).collection("Finanzas").document(dateMonth+"/ventas").set(
-            hashMapOf("ventas" to countMonth)) }//END MES
-
-        /****TODAY ***/
-        fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).get().addOnSuccessListener {
-            countDay = nuevoPrecio_ventas.text.toString().toInt() * cantidad
-            if(!it.exists()){
-               fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
-                   hashMapOf("ventas" to countDay), SetOptions.merge())
-           }
-           else{
-               fireData.collection("db1").document(database).collection("Finanzas").document(dateToday)
-                   .update("ventas",FieldValue.increment(countDay.toLong()))
-           }
-        }.addOnFailureListener {
-            println("Fallo Day")
-            fireData.collection("db1").document(database).collection("Finanzas").document(dateToday).set(
-            hashMapOf("ventas" to countDay), SetOptions.merge())
-            updateFinanzas(dateToday)
-        } //END DAY
-
-    }
 
 
     override fun onBackPressed() {
