@@ -10,6 +10,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.core.view.View
@@ -33,12 +34,12 @@ class RegisterUsers : AppCompatActivity() {
 
         loadAdFullScreen()
         loadPreferences()
+
         if(isFirst){
             //Set visible
             register_negocio.visibility = android.view.View.VISIBLE
             register_isAdmin.isChecked = true;
             register_isAdmin.visibility = android.view.View.INVISIBLE
-
 
         }
 
@@ -79,6 +80,7 @@ class RegisterUsers : AppCompatActivity() {
     fun createUserFireStore(){
         if(isFirst) {
             mydatabase = register_negocio.text.toString()
+
         }
         register_negocio.text = Editable.Factory.getInstance().newEditable(mydatabase)
 
@@ -95,63 +97,64 @@ class RegisterUsers : AppCompatActivity() {
             var email = register_email.text.toString();var pass = register_password.text.toString();
             var phone = register_phone.text.toString();var isAdmin = register_isAdmin.isChecked
 
-            auth.createUserWithEmailAndPassword(email,pass).addOnSuccessListener {
+            auth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
                 println("Estamos Creando ... ")
-                var uid = it.user?.uid.toString()
-                myUid = uid
-                //var db = Firebase.database.getReference("Usuarios").child(uid)
-                var db = fireData.collection("db1").document("Usuarios").collection("Usuarios").document(uid)
-                if(isFirst){
-                    //db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
-                    db.set(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                if(it.isSuccessful){
+                    var uid = it.result.user?.uid.toString()
+                    myUid = uid
+                    //var db = Firebase.database.getReference("Usuarios").child(uid)
+                    var db = fireData.collection("db1").document("Usuarios").collection("Usuarios").document(uid)
+                    if(isFirst){
+                        //db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                        db.set(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
 
-                }
-                else{
-                    //db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
-                    db.set(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
-                }
-                //Registrar en su respectiva base de datos
-                /***** Realizar cambio aqui ****/
+                    }
+                    else{
+                        //db.setValue(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
+                        db.set(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
+                    }
+                    //Registrar en su respectiva base de datos
+                    /***** Realizar cambio aqui ****/
 
-                if (isFirst){
-                    //var bussinesdb= Firebase.database.getReference("$mydatabase~$uid").child("Usuarios").child(uid)
-                    var bussinesdb = fireData.collection("db1").document("$mydatabase~$uid").collection("Usuarios").document(uid)
-                    bussinesdb.set(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
-                    //bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
-                }
-                else{
-                    //var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
-                    var bussinesdb = fireData.collection("db1").document(mydatabase).collection("Usuarios").document(uid)
-                    //bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
-                    bussinesdb.set(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
+                    if (isFirst){
+                        //var bussinesdb= Firebase.database.getReference("$mydatabase~$uid").child("Usuarios").child(uid)
+                        var bussinesdb = fireData.collection("db1").document("$mydatabase~$uid").collection("Usuarios").document(uid)
+                        bussinesdb.set(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                        //bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,"$mydatabase~$uid",uid))
+                    }
+                    else{
+                        //var bussinesdb= Firebase.database.getReference(mydatabase).child("Usuarios").child(uid)
+                        var bussinesdb = fireData.collection("db1").document(mydatabase).collection("Usuarios").document(uid)
+                        //bussinesdb.setValue(userInfo(email,pass,phone,name,last,isAdmin,date,mydatabase,uid))
+                        bussinesdb.set(userInfo(email,pass,phone,name,last,isAdmin,date, mydatabase,uid))
 
+                    }
+
+                    if(isFirst){
+
+                        var prefs = getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit()
+                        prefs.putBoolean("isLogin", true)
+                        prefs.putString("database","$mydatabase~$myUid")
+                        prefs.putBoolean("isAdmin", isAdmin as Boolean)
+                        prefs.putString("name", "${register_name.toString()} ${register_last.toString()}")
+                        prefs.apply()
+                        Intent(this,MainActivity::class.java).apply { startActivity(this) }
+                    }
+                    else {
+                        Intent(this, HomePage::class.java).apply { startActivity(this) }
+                    }
+
+                    makeToast("Usuario registrado con exito")
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(this)
+                    }else{println("El anuncio esta cargando")}
                 }
 
-                makeToast("Usuario registrado con exito")
-                if (mInterstitialAd != null) {
-                    mInterstitialAd?.show(this)
-                }else{println("El anuncio esta cargando")}
             }.addOnFailureListener {
                 println("Esta es la excepcion" + it.message)
             }//END LISTENER
-
-            if(isFirst){
-               /* if(auth.currentUser != null){
-                    auth.signOut()
-                }*/
-                var prefs = getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit()
-                prefs.putBoolean("isLogin", true)
-                prefs.putString("database","$mydatabase~$myUid")
-                prefs.putBoolean("isAdmin", isAdmin as Boolean)
-                prefs.putString("name", "${register_name.toString()} ${register_last.toString()}")
-                prefs.apply()
-                Intent(this,MainActivity::class.java).apply { startActivity(this) }
-            }
-            else {
-                Intent(this, HomePage::class.java).apply { startActivity(this) }
-            }
-
-        }else{makeToast("Faltan campos por completar")}
+        }
+        else{makeToast("Faltan campos por completar")}
     }
 
 

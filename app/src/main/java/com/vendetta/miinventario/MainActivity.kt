@@ -16,6 +16,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.tasks.await
 
 private lateinit var auth: FirebaseAuth
 private lateinit var database:HashMap<String,Any?>

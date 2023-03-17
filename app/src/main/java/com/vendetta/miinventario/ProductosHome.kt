@@ -43,6 +43,8 @@ class ProductosHome : AppCompatActivity() {
 
             Intent(this,NuevoProducto::class.java).apply { startActivity(this) }
         }
+
+
     }
 
     private fun searchBarCode() {
