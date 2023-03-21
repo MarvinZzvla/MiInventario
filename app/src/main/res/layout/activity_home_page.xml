@@ -45,19 +45,32 @@
         android:background="@drawable/bg_form"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Ventas"
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/database_name"
         app:layout_constraintVertical_bias="0.04" />
 
+    <ImageView
+        android:id="@+id/ventas_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/ventas"
+        app:layout_constraintTop_toTopOf="@+id/ventas_btn"
+        app:layout_constraintStart_toStartOf="@+id/ventas_btn"
+        app:layout_constraintBottom_toBottomOf="@+id/ventas_btn"
+         />
+
     <TextView
+        android:id="@+id/textView25"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="Ventas"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="20dp"
         android:textStyle="bold"
-        android:text="Ventas"
-        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/ventas_btn"
         app:layout_constraintEnd_toEndOf="@+id/ventas_btn"
         app:layout_constraintStart_toStartOf="@+id/ventas_btn"
@@ -71,10 +84,22 @@
         android:layout_margin="15dp"
         app:layout_constraintVertical_bias="0.05"
         android:background="@drawable/bg_form"
+        android:contentDescription="Productos"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ventas_btn" />
+
+    <ImageView
+        android:id="@+id/productos_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/inventario"
+        app:layout_constraintTop_toTopOf="@+id/productos_btn"
+        app:layout_constraintStart_toStartOf="@+id/productos_btn"
+        app:layout_constraintBottom_toBottomOf="@+id/productos_btn"
+        />
 
     <TextView
         android:id="@+id/textView13"
@@ -83,7 +108,7 @@
         android:text="Productos"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/productos_btn"
         app:layout_constraintEnd_toEndOf="@+id/productos_btn"
@@ -96,11 +121,21 @@
         android:layout_margin="15dp"
         app:layout_constraintVertical_bias="0.05"
         android:background="@drawable/bg_form"
+        android:contentDescription="Finanzas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/productos_btn" />
-
+    <ImageView
+        android:id="@+id/finanzas_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/finanzas"
+        app:layout_constraintTop_toTopOf="@+id/finanzas_btn"
+        app:layout_constraintStart_toStartOf="@+id/finanzas_btn"
+        app:layout_constraintBottom_toBottomOf="@+id/finanzas_btn"
+        />
     <TextView
         android:id="@+id/textView12"
         android:layout_width="0dp"
@@ -124,8 +159,20 @@
         app:layout_constraintBottom_toTopOf="@+id/adViewHome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="Usuarios"
         app:layout_constraintTop_toBottomOf="@+id/finanzas_btn"
         app:layout_constraintVertical_bias="0.05" />
+
+    <ImageView
+        android:id="@+id/usuarios_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/users"
+        app:layout_constraintTop_toTopOf="@+id/usuarios_btn"
+        app:layout_constraintStart_toStartOf="@+id/usuarios_btn"
+        app:layout_constraintBottom_toBottomOf="@+id/usuarios_btn"
+        />
 
     <ImageButton
         android:id="@+id/info_btn"
