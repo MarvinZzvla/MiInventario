@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <style name="MainActivity" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:buttonCornerRadius">20dp</item>
-    </style>
-</resources>

@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.MiInventario" parent="Theme.AppCompat.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#2B2B2B</item>
+        <item name="colorPrimary">#0c6bfa</item>
         <item name="colorPrimaryVariant">#1C1C1C</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <!-- Secondary brand color. -->
@@ -10,10 +10,22 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="MainActivity" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.MaterialScreen" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#0c6bfa</item>
+        <item name="colorPrimaryVariant">#1C1C1C</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
     </style>
+
 </resources>
