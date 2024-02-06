@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    tools:context=".FacturaPage">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="20dp"
+        android:layout_margin="20dp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/factura_negocioName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="El Oferton"
+            android:textSize="32sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextrabold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <TextView
+            android:id="@+id/factura_infoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Factura comercial"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_negocioName"/>
+        <TextView
+            android:id="@+id/factura_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Telf: 2523-2637"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_infoText"/>
+        <TextView
+            android:id="@+id/factura_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Factura #: 1"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_phone"/>
+
+        <TextView
+            android:id="@+id/factura_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Local: 1"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_phone"/>
+
+        <TextView
+            android:id="@+id/factura_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha: 20-01-2024 10:00"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_local"/>
+        <TextView
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:textSize="20sp"
+            android:background="@color/black"
+            android:textColor="@color/black"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_date"/>
+
+        <TextView
+            android:id="@+id/factura_productoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Productos"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextralight"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line1"/>
+
+        <TextView
+            android:id="@+id/factura_nameText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/mairyextralight"
+            android:text="Nombre"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toStartOf="@+id/factura_cantidadText"
+            app:layout_constraintRight_toLeftOf="@+id/factura_cantidadText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_productoText" />
+
+        <TextView
+            android:id="@+id/factura_cantidadText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/mairyextralight"
+            android:text="Cantidad"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toStartOf="@+id/factura_valorText"
+            app:layout_constraintRight_toLeftOf="@+id/factura_valorText"
+            app:layout_constraintStart_toEndOf="@+id/factura_nameText"
+            app:layout_constraintTop_toBottomOf="@+id/factura_productoText" />
+        <TextView
+            android:id="@+id/factura_valorText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:fontFamily="@font/mairyextralight"
+            android:text="Valor"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/factura_cantidadText"
+            app:layout_constraintTop_toBottomOf="@+id/factura_productoText" />
+
+        <TextView
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:textSize="20sp"
+            android:background="@color/black"
+            android:textColor="@color/black"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factura_valorText"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleFactura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/line2"/>
+
+        <TextView
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:textSize="20sp"
+            android:background="@color/black"
+            android:textColor="@color/black"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/mairyextralight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recycleFactura"/>
+
+        <TextView
+            android:id="@+id/factura_totalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: $1500"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recycleFactura"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mairyextrabold"
+            android:textSize="32sp"
+            android:layout_marginTop="20dp"
+            />
+
+        <TextView
+            android:id="@+id/factura_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/mairyextralight"
+            android:text="Muchas gracias por su compra!"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/factura_totalText" />
+        <TextView
+            android:id="@+id/factura_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/mairyextralight"
+            android:text="Mi inventario ☺"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/factura_text" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/bg_chart"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/selectBt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_background"
+            android:fontFamily="@font/mairyextrabold"
+            android:padding="10dp"
+            android:text="Buscar impresora"
+            app:layout_constraintBottom_toTopOf="@+id/btnPrint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printer_name" />
+
+        <Button
+            android:id="@+id/btnPrint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_danger_bg"
+            android:fontFamily="@font/mairyextrabold"
+            android:padding="10dp"
+            android:text="Imprimir"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printer_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1" />
+
+        <EditText
+            android:id="@+id/printer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:ems="10"
+            android:hint="Nombre de la impresora"
+            android:inputType="text"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/selectBt" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,7 +17,7 @@
         <!-- Contenido del ScrollView dentro de un nuevo ConstraintLayout o cualquier otro diseño según tus necesidades -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="0dp"
             android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
@@ -129,10 +129,157 @@
                 app:layout_constraintTop_toBottomOf="@+id/gananciasText"
                 />
 
+            <TextView
+                android:id="@+id/ventasMenuText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/mairyextrabold"
+                android:text="Ventas recientes"
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearChart" />
 
+            <Button
+                android:id="@+id/btnAddVenta"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Nueva venta"
+                android:fontFamily="@font/mairyextrabold"
+                android:padding="5dp"
+                android:textSize="10sp"
+                app:layout_constraintStart_toEndOf="@id/ventasMenuText"
+                app:layout_constraintTop_toTopOf="@+id/ventasMenuText"
+                app:layout_constraintHorizontal_bias="0.1"
+                android:background="@drawable/button_background"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <EditText
+                android:id="@+id/searchVentaText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/mairyextralight"
+                android:hint="Buscar por # Factura "
+                android:inputType="number"
+                tools:text=""
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:drawableTint="@color/white"
+                android:drawablePadding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ventasMenuText"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleVentas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_chart"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/searchVentaText" />
+
+            <TextView
+                android:id="@+id/productosMenuText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/mairyextrabold"
+                android:text="Productos"
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recycleVentas" />
+
+            <Button
+                android:id="@+id/btnAddProducto"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Agregar un producto"
+                android:fontFamily="@font/mairyextrabold"
+                android:padding="5dp"
+                android:textSize="10sp"
+                app:layout_constraintStart_toEndOf="@id/productosMenuText"
+                app:layout_constraintTop_toTopOf="@+id/productosMenuText"
+                app:layout_constraintHorizontal_bias="0.75"
+                android:background="@drawable/button_background"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <EditText
+                android:id="@+id/searchProductoText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/mairyextralight"
+                android:hint="Nombre o Código"
+                tools:text=""
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:drawableTint="@color/white"
+                android:drawablePadding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="@+id/btnBarCode"
+                app:layout_constraintEnd_toStartOf="@+id/btnBarCode"
+                app:layout_constraintTop_toBottomOf="@+id/productosMenuText"
+                />
+
+            <ImageView
+                android:id="@+id/btnBarCode"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/barcode"
+                android:clickable="true"
+                app:layout_constraintTop_toTopOf="@+id/searchProductoText"
+                app:layout_constraintStart_toEndOf="@+id/searchProductoText"
+                app:layout_constraintBottom_toBottomOf="@+id/searchProductoText"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:focusable="true" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleProductos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_chart"
+                app:layout_constraintTop_toBottomOf="@+id/searchProductoText"
+                app:layout_constraintStart_toStartOf="parent"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </ScrollView>
-
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addFloatingBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_input_add"
+        android:layout_margin="20dp"
+        android:backgroundTint="#0c6cfc"
+        app:fabSize="normal"
+        app:maxImageSize="32dp"
+        android:scaleType="center"
+        android:tint="#FFFF"
+        app:borderWidth="2dp"
+        app:elevation="6dp"
+        android:theme="@style/Theme.RecycleView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

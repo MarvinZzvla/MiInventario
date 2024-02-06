@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="#141820"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
+
+
+            <TextView
+                android:id="@+id/productoNameText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mairyextrabold"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="Camiseta"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/productoCantidadText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mairyextralight"
+                android:text="Disponibles: 120"
+                android:layout_marginEnd="30dp"
+                android:textColor="@color/white"
+                app:layout_constraintLeft_toLeftOf="@+id/productoPrecioText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/productoNameText"
+                app:layout_constraintEnd_toStartOf="@id/productoPrecioText"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/productoPrecioText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:fontFamily="@font/mairyextralight"
+                android:text="Precio: $486"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/productoCantidadText"
+                app:layout_constraintTop_toTopOf="@id/productoCantidadText" />
+
+            <TextView
+                android:id="@+id/productoGananciaText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mairyextralight"
+                android:text="Ganancia: $286"
+                android:textColor="#4CAF50"
+                android:textSize="14sp"
+
+                app:layout_constraintStart_toStartOf="@+id/productoPrecioText"
+
+                app:layout_constraintTop_toBottomOf="@id/productoPrecioText" />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

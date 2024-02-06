@@ -1,42 +1,102 @@
 package com.vendetta.miinventario
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.text.Editable
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.util.Pair
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.vendetta.miinventario.adapter.ProductosAdapter
+import com.vendetta.miinventario.adapter.VentasAdapter
+import com.vendetta.miinventario.data.ProductosProvider
+import com.vendetta.miinventario.data.VentasProvider
 import com.vendetta.miinventario.databinding.ActivityHomePageBinding
-import java.security.KeyStore.Entry
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class HomePage : AppCompatActivity() {
     lateinit var binding : ActivityHomePageBinding
     val DAY_IN_MILISECONDS = 86400000
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //JUST FOR TESTING PURPOSE
+        Intent(this,NuevaVenta::class.java).apply { startActivity(this) }
+
+        //Cargar los recycles views
+        initRecycleViewVentas()
+        initRecycleViewProductos()
+
         //Cuando el boton de seleccionar es presionado desplegar date ranger picker
         binding.btnSelectDate.setOnClickListener {
             //Mostrar Date Picker
             showDateRangePicker()
             }
-
+        //Mostrar linear chart
         configLinearChart()
 
+        binding.addFloatingBtn.setOnClickListener {
+            Intent(this,NuevaVenta::class.java).apply {startActivity(this)}
+        }
+        binding.btnAddVenta.setOnClickListener {
+            Intent(this,NuevaVenta::class.java).apply {startActivity(this)}
+        }
+
+        binding.btnBarCode.isClickable = true
+        binding.btnBarCode.setOnClickListener {
+            initScanner()
+        }
+
+    }
+
+    private fun initScanner() {
+        try {
+            val options =
+                GmsBarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+                    .allowManualInput().enableAutoZoom().build()
+            val scanner = GmsBarcodeScanning.getClient(this, options)
+
+            scanner.startScan().addOnSuccessListener { barcode ->
+                val rawValue: String? = barcode.rawValue
+                binding.searchProductoText.setText(rawValue)
+            }.addOnCanceledListener {
+                //Task cancelled
+            }.addOnFailureListener {
+                println(it.message)
+                println(it)
+                //Task Failed
+            }
+        }catch (e: Exception){
+            println("Hay un error")
+        }
+
+    }
+
+    private fun initRecycleViewProductos() {
+        val recyclerView = binding.recycleProductos
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = ProductosAdapter(ProductosProvider.productoList)
+    }
+
+    private fun initRecycleViewVentas() {
+        val recyclerView = binding.recycleVentas
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = VentasAdapter(VentasProvider.ventaList)
     }
 
     /************************************************************

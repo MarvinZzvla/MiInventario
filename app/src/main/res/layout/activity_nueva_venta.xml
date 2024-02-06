@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    tools:context=".NuevaVenta">
+
+    <TextView
+        android:id="@+id/headingVentasText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nueva venta"
+        android:background="#11141B"
+        android:gravity="center"
+        android:textSize="30sp"
+
+        android:fontFamily="@font/mairyextrabold"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:hint="Busqueda de productos"
+        android:drawablePadding="10dp"
+        android:background="@drawable/bg_chart"
+        app:layout_constraintEnd_toStartOf="@+id/readyBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/readyBtn"
+        app:layout_constraintTop_toBottomOf="@+id/headingVentasText" />
+
+    <ImageView
+        android:id="@+id/readyBtn"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/checked"
+        app:layout_constraintStart_toEndOf="@id/autoCompleteText"
+        app:layout_constraintTop_toTopOf="@id/autoCompleteText"
+        app:layout_constraintBottom_toBottomOf="@id/autoCompleteText"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintNuevaVenta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_chart"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/autoCompleteText">
+
+        <EditText
+            android:id="@+id/nuevaVenta_nameProductoText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Nombre del producto"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0" />
+
+        <EditText
+            android:id="@+id/nuevaVenta_cantidadText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Cantidad"
+            android:inputType="number"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@id/nuevaVenta_precioText"
+            app:layout_constraintRight_toLeftOf="@id/nuevaVenta_precioText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nuevaVenta_nameProductoText" />
+
+        <EditText
+            android:id="@+id/nuevaVenta_precioText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Precio"
+            android:inputType="number"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/nuevaVenta_cantidadText"
+            app:layout_constraintTop_toBottomOf="@id/nuevaVenta_nameProductoText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_margin="20dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_chart_border"
+            android:maxHeight="250dp"
+            app:layout_constraintTop_toBottomOf="@+id/nuevaVenta_cantidadText"
+            tools:layout_editor_absoluteX="19dp" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/nuevaVenta_totalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="Total Gastado: \n$1500"
+        android:textColor="@color/white"
+        android:textSize="36dp"
+        android:padding="10dp"
+        android:fontFamily="@font/mairyextrabold"
+        android:background="@drawable/bg_chart_border"
+        app:layout_constraintTop_toBottomOf="@+id/constraintNuevaVenta"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/btnPagoVenta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="20dp"
+        android:text="Procesar pago"
+        android:fontFamily="@font/mairyextrabold"
+        android:textSize="20dp"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@+id/nuevaVenta_totalText"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scanFloatingBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="#0c6cfc"
+        android:scaleType="center"
+        android:src="@drawable/barcode"
+        android:theme="@style/Theme.RecycleView"
+        android:tint="#FFFFFF"
+        app:borderWidth="2dp"
+        app:elevation="6dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintNuevaVenta"
+        app:layout_constraintVertical_bias="0"
+        app:maxImageSize="32dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
