@@ -14,13 +14,15 @@ private lateinit var binding: ActivityMainBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //JUST FOR TESTING PURPOSE
-        Intent(this,HomePage::class.java).apply { startActivity(this) }
 
         binding.btnLogin.setOnClickListener {
             Intent(this,HomePage::class.java).apply { startActivity(this) }
             binding.editTextText.text.clear()
             binding.editPin.text.clear()
+        }
+
+        binding.btnRegister.setOnClickListener {
+            Intent(this,RegisterUser::class.java).apply { startActivity(this) }
         }
     }
 

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    tools:context=".NuevoProducto">
+
+    <TextView
+        android:id="@+id/headingProductosText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nuevo Producto"
+        android:background="#11141B"
+        android:gravity="center"
+        android:textSize="30sp"
+
+        android:fontFamily="@font/mairyextrabold"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintNuevoProducto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/bg_chart"
+        android:paddingBottom="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headingProductosText">
+
+        <EditText
+            android:id="@+id/nuevoProducto_nameProductoText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Nombre del producto"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0" />
+
+        <EditText
+            android:id="@+id/nuevoProducto_cantidadText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Cantidad"
+            android:inputType="number"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@id/nuevoProducto_precioText"
+            app:layout_constraintRight_toLeftOf="@id/nuevoProducto_precioText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_nameProductoText" />
+
+        <EditText
+            android:id="@+id/nuevoProducto_precioText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Precio de costo"
+            android:inputType="number"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/nuevoProducto_cantidadText"
+            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_nameProductoText" />
+
+        <EditText
+            android:id="@+id/nuevoProducto_precioVentaText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Precio de venta"
+            android:inputType="number"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@id/nuevoProducto_barcodeText"
+            app:layout_constraintRight_toLeftOf="@id/nuevoProducto_barcodeText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_cantidadText" />
+        <EditText
+            android:id="@+id/nuevoProducto_barcodeText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/bg_chart_border"
+            android:hint="Codigo de barras"
+            android:inputType="number"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/nuevoProducto_precioVentaText"
+            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_precioText" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <Button
+        android:id="@+id/btnSubmitProducto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="@drawable/button_background"
+        android:fontFamily="@font/mairyextrabold"
+        android:text="Procesar pago"
+        android:textSize="20dp"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintNuevoProducto" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scanFloatingProductoBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="#0c6cfc"
+        android:scaleType="center"
+        android:src="@drawable/barcode"
+        android:theme="@style/Theme.RecycleView"
+        android:tint="#FFFFFF"
+        app:borderWidth="2dp"
+        app:elevation="6dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintNuevoProducto"
+        app:layout_constraintVertical_bias="0.05"
+        app:maxImageSize="32dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

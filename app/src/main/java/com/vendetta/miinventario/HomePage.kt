@@ -35,8 +35,6 @@ class HomePage : AppCompatActivity() {
         binding = ActivityHomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //JUST FOR TESTING PURPOSE
-        Intent(this,NuevaVenta::class.java).apply { startActivity(this) }
 
         //Cargar los recycles views
         initRecycleViewVentas()
@@ -55,6 +53,10 @@ class HomePage : AppCompatActivity() {
         }
         binding.btnAddVenta.setOnClickListener {
             Intent(this,NuevaVenta::class.java).apply {startActivity(this)}
+        }
+
+        binding.btnAddProducto.setOnClickListener {
+            Intent(this,NuevoProducto::class.java).apply { startActivity(this) }
         }
 
         binding.btnBarCode.isClickable = true
