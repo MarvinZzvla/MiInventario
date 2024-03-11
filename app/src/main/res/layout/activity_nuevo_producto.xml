@@ -114,13 +114,13 @@
         android:layout_margin="20dp"
         android:background="@drawable/button_background"
         android:fontFamily="@font/mairyextrabold"
-        android:text="Procesar pago"
+        android:text="Crear producto"
         android:textSize="20dp"
-        app:layout_constraintVertical_bias="0.2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintNuevoProducto" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintNuevoProducto"
+        app:layout_constraintVertical_bias="0.231" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/scanFloatingProductoBtn"
@@ -143,5 +143,13 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintNuevoProducto"
         app:layout_constraintVertical_bias="0.05"
         app:maxImageSize="32dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

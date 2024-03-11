@@ -26,12 +26,11 @@
                 android:layout_centerInParent="true"
                 app:cardCornerRadius="60dp"
                 app:cardElevation="4dp"
-                app:layout_constraintVertical_bias="0.05"
                 app:layout_constraintHorizontal_bias="0.6"
-                app:layout_constraintBottom_toBottomOf="parent"
+
                 app:layout_constraintEnd_toStartOf="@+id/textView2"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="@+id/textView2">
 
                 <ImageView
                     android:id="@+id/circularImageView"
@@ -49,13 +48,23 @@
                 android:text="El Oferton"
                 android:textSize="32sp"
                 android:textColor="@color/white"
-                app:layout_constraintVertical_bias="0.05"
+                app:layout_constraintVertical_bias="0.02"
                 android:fontFamily="@font/mairyextrabold"
                 app:layout_constraintHorizontal_bias="0.3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/exitBtn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/exit"
+                app:layout_constraintTop_toTopOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                app:layout_constraintHorizontal_bias="0.9"/>
 
             <TextView
                 android:id="@+id/spacer"
@@ -272,7 +281,7 @@
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_input_add"
         android:layout_margin="20dp"
-        android:backgroundTint="#0c6cfc"
+        android:backgroundTint="#800C6CFC"
         app:fabSize="normal"
         app:maxImageSize="32dp"
         android:scaleType="center"

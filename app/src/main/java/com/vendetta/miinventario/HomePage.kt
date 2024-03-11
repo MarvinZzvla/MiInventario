@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.LineData
@@ -21,6 +22,8 @@ import com.vendetta.miinventario.adapter.VentasAdapter
 import com.vendetta.miinventario.data.ProductosProvider
 import com.vendetta.miinventario.data.VentasProvider
 import com.vendetta.miinventario.databinding.ActivityHomePageBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -39,6 +42,13 @@ class HomePage : AppCompatActivity() {
         //Cargar los recycles views
         initRecycleViewVentas()
         initRecycleViewProductos()
+
+        //Cuando sea seleccionado el boton de salir
+        binding.exitBtn.setOnClickListener {
+            //Borrar los Login Prefs
+            getSharedPreferences("login_prefs", MODE_PRIVATE).edit().clear().apply()
+            Intent(this,MainActivity::class.java).apply { startActivity(this) }
+        }
 
         //Cuando el boton de seleccionar es presionado desplegar date ranger picker
         binding.btnSelectDate.setOnClickListener {
@@ -92,7 +102,8 @@ class HomePage : AppCompatActivity() {
     private fun initRecycleViewProductos() {
         val recyclerView = binding.recycleProductos
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = ProductosAdapter(ProductosProvider.productoList)
+        lifecycleScope.launch(Dispatchers.IO) { recyclerView.adapter = ProductosAdapter(ProductosProvider().getUser(applicationContext)) }
+
     }
 
     private fun initRecycleViewVentas() {
