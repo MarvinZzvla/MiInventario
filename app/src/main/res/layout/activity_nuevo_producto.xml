@@ -35,6 +35,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headingProductosText">
 
+        <TextView
+            android:id="@+id/textInfoProducto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/nuevoProducto_nameProductoText"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textStyle="bold"
+            android:fontFamily="@font/mairyextralight"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="20dp"
+            android:text="Producto:"/>
+
         <EditText
             android:id="@+id/nuevoProducto_nameProductoText"
             android:layout_width="0dp"
@@ -46,8 +59,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInfoProducto"
             app:layout_constraintVertical_bias="0" />
+
+        <TextView
+            android:id="@+id/textInfoCantidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/nuevoProducto_cantidadText"
+            app:layout_constraintTop_toBottomOf="@+id/nuevoProducto_nameProductoText"
+            android:textStyle="bold"
+            android:fontFamily="@font/mairyextralight"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="20dp"
+            android:text="Cantidad:"/>
 
         <EditText
             android:id="@+id/nuevoProducto_cantidadText"
@@ -61,13 +87,25 @@
             app:layout_constraintEnd_toStartOf="@id/nuevoProducto_precioText"
             app:layout_constraintRight_toLeftOf="@id/nuevoProducto_precioText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_nameProductoText" />
+            app:layout_constraintTop_toBottomOf="@id/textInfoCantidad" />
+
+        <TextView
+            android:id="@+id/textInfoPrecioCosto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/nuevoProducto_precioText"
+            app:layout_constraintTop_toBottomOf="@+id/nuevoProducto_nameProductoText"
+            android:textStyle="bold"
+            android:fontFamily="@font/mairyextralight"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="20dp"
+            android:text="Precio de costo:"/>
 
         <EditText
             android:id="@+id/nuevoProducto_precioText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-
             android:layout_margin="20dp"
             android:background="@drawable/bg_chart_border"
             android:hint="Precio de costo"
@@ -75,7 +113,20 @@
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/nuevoProducto_cantidadText"
-            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_nameProductoText" />
+            app:layout_constraintTop_toBottomOf="@id/textInfoPrecioCosto" />
+
+        <TextView
+            android:id="@+id/textInfoPrecioVenta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/nuevoProducto_precioVentaText"
+            app:layout_constraintTop_toBottomOf="@+id/nuevoProducto_cantidadText"
+            android:textStyle="bold"
+            android:fontFamily="@font/mairyextralight"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="20dp"
+            android:text="Precio de venta:"/>
 
         <EditText
             android:id="@+id/nuevoProducto_precioVentaText"
@@ -89,7 +140,20 @@
             app:layout_constraintEnd_toStartOf="@id/nuevoProducto_barcodeText"
             app:layout_constraintRight_toLeftOf="@id/nuevoProducto_barcodeText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_cantidadText" />
+            app:layout_constraintTop_toBottomOf="@id/textInfoPrecioVenta" />
+
+        <TextView
+            android:id="@+id/textInfoBarcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/nuevoProducto_barcodeText"
+            app:layout_constraintTop_toBottomOf="@+id/nuevoProducto_precioText"
+            android:textStyle="bold"
+            android:fontFamily="@font/mairyextralight"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="20dp"
+            android:text="Código de barras:"/>
         <EditText
             android:id="@+id/nuevoProducto_barcodeText"
             android:layout_width="0dp"
@@ -101,7 +165,7 @@
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/nuevoProducto_precioVentaText"
-            app:layout_constraintTop_toBottomOf="@id/nuevoProducto_precioText" />
+            app:layout_constraintTop_toBottomOf="@id/textInfoBarcode" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -143,13 +207,5 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintNuevoProducto"
         app:layout_constraintVertical_bias="0.05"
         app:maxImageSize="32dp" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

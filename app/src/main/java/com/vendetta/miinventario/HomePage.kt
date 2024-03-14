@@ -109,7 +109,7 @@ class HomePage : AppCompatActivity() {
     private fun initRecycleViewVentas() {
         val recyclerView = binding.recycleVentas
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = VentasAdapter(VentasProvider.ventaList)
+        lifecycleScope.launch(Dispatchers.IO) {recyclerView.adapter = VentasAdapter(VentasProvider().getAllVentas(applicationContext))}
     }
 
     /************************************************************

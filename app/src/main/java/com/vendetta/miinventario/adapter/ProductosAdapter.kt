@@ -1,5 +1,6 @@
 package com.vendetta.miinventario.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -17,8 +18,9 @@ class ProductosAdapter(private val productoList : List<Productos>) : RecyclerVie
     return productoList.size
     }
 
+
     override fun onBindViewHolder(holder: ProductosViewHolder, position: Int) {
-    val item =productoList[position]
+        val item =productoList[position]
         holder.render(item)
     }
 }

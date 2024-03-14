@@ -52,10 +52,10 @@
                 android:text="○Camiseta\n ○Pantalon \n +1 Mas..."
                 android:textColor="@color/white"
                 android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@id/totalVentaText"
                 app:layout_constraintLeft_toLeftOf="@id/totalVentaText"
-                app:layout_constraintTop_toBottomOf="@+id/dateText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/totalVentaText"/>
+                app:layout_constraintTop_toBottomOf="@+id/dateText" />
 
             <TextView
                 android:id="@+id/totalVentaText"

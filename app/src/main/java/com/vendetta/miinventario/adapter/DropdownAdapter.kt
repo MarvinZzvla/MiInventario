@@ -92,6 +92,7 @@ class DropdownAdapter(context: Context, private val elementos: List<VentaDropdow
                 return (resultValue as VentaDropdown).productoName
             }
 
+
         }
     }
 

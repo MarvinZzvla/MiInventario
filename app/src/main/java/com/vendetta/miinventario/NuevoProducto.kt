@@ -36,14 +36,6 @@ class NuevoProducto : AppCompatActivity() {
         //Initialize databse
         database = getDatabase(this)
 
-        binding.button.setOnClickListener {
-        lifecycleScope.launch(Dispatchers.Main) {
-            val productos = database.productosDao.getAllProductos()
-            println(productos)
-        }
-
-        }
-
         binding.scanFloatingProductoBtn.setOnClickListener {
             initScanner()
         }
@@ -105,7 +97,7 @@ class NuevoProducto : AppCompatActivity() {
             Available = cantidad.toInt(),
             Price = precio.toFloat(),
             Price_Sell =  precioVenta.toFloat(),
-            BarCode = barcode.toInt())
+            BarCode = barcode)
 
 
         //Call Coroutine
@@ -136,6 +128,7 @@ class NuevoProducto : AppCompatActivity() {
         scanner.startScan().addOnSuccessListener { barcode ->
             val rawValue: String? = barcode.rawValue
             println(rawValue)
+            binding.nuevoProductoBarcodeText.setText(rawValue)
         }.addOnCanceledListener {
             //Task cancelled
         }.addOnFailureListener {

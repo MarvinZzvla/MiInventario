@@ -20,8 +20,9 @@ class VentasViewHolder(view : View) : ViewHolder(view) {
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
         date.text = simpleDateFormat.format(venta.fecha)
+        //date.text = venta.fecha
         factura.text = "#${venta.factura.toString()}"
-        ventas.text = venta.objetos.joinToString(separator = ", ","Items: " )
+        ventas.text = venta.objetos.dropLast(1)
         totalVentas.text = "$${venta.totalVenta.toString()}"
         gananciaVentas.text = "$${venta.totalGanancia.toString()}"
     }

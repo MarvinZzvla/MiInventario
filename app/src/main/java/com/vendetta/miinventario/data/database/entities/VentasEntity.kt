@@ -6,12 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = "Ventas", foreignKeys = [ForeignKey(
-    entity = ProductosEntity::class,
-    parentColumns = ["ID"],
-    childColumns = ["FK_Producto"],
-    onDelete = ForeignKey.CASCADE
-)])
+@Entity(tableName = "Ventas")
 data class VentasEntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
@@ -24,6 +19,8 @@ data class VentasEntity (
     val Quantity : Int = 0 ,
     @ColumnInfo(name = "Price")
     val Price : Float = 0.0f,
+    @ColumnInfo(name = "Profit")
+    val Profit : Float = 0.0f,
     @ColumnInfo(name = "ID_Factura")
     val ID_Factura : Int = 0
 

@@ -19,6 +19,6 @@ data class ProductosEntity (
     @ColumnInfo(name = "Price_Sell")
     val Price_Sell :Float = 0.0f,
     @ColumnInfo(name = "BarCode")
-    val BarCode: Int = 0
+    val BarCode: String = ""
 
 )
