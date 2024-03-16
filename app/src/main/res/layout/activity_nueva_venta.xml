@@ -7,6 +7,17 @@
     android:background="@drawable/bg_main"
     tools:context=".NuevaVenta">
 
+    <!-- Agregar el ScrollView como contenedor principal -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Contenido del ScrollView dentro de un nuevo ConstraintLayout o cualquier otro diseño según tus necesidades -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="0dp"
+            android:layout_height="wrap_content">
+
     <TextView
         android:id="@+id/headingVentasText"
         android:layout_width="match_parent"
@@ -66,6 +77,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:clickable="false"
+            android:enabled="false"
             android:background="@drawable/bg_chart_border"
             android:hint="Nombre del producto"
             android:padding="10dp"
@@ -155,6 +168,19 @@
             app:layout_constraintStart_toEndOf="@id/nuevaVenta_cantidadText"
             app:layout_constraintTop_toBottomOf="@id/textInfoPrecio" />
 
+        <Button
+            android:id="@+id/btnAddtoRecycle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/button_background"
+            android:fontFamily="@font/mairyextrabold"
+            android:text="Agregar producto"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@+id/nuevaVenta_precioText"
+            app:layout_constraintStart_toStartOf="@+id/nuevaVenta_cantidadText"
+            app:layout_constraintTop_toBottomOf="@+id/nuevaVenta_profitText" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycleViewNuevaVenta"
             android:layout_width="match_parent"
@@ -163,7 +189,7 @@
             android:layout_marginTop="12dp"
             android:background="@drawable/bg_chart_border"
             android:maxHeight="250dp"
-            app:layout_constraintTop_toBottomOf="@+id/nuevaVenta_cantidadText"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddtoRecycle"
             tools:layout_editor_absoluteX="19dp" />
 
 
@@ -173,7 +199,7 @@
         android:id="@+id/nuevaVenta_totalText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
@@ -222,5 +248,9 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintNuevaVenta"
         app:layout_constraintVertical_bias="0"
         app:maxImageSize="32dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

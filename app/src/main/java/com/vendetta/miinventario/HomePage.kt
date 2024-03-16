@@ -76,6 +76,13 @@ class HomePage : AppCompatActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        //Cargar los recycles views
+        initRecycleViewVentas()
+        initRecycleViewProductos()
+    }
+
     private fun initScanner() {
         try {
             val options =
@@ -109,7 +116,7 @@ class HomePage : AppCompatActivity() {
     private fun initRecycleViewVentas() {
         val recyclerView = binding.recycleVentas
         recyclerView.layoutManager = LinearLayoutManager(this)
-        lifecycleScope.launch(Dispatchers.IO) {recyclerView.adapter = VentasAdapter(VentasProvider().getAllVentas(applicationContext))}
+        lifecycleScope.launch(Dispatchers.Main) {recyclerView.adapter = VentasAdapter(VentasProvider().getAllVentas(applicationContext))}
     }
 
     /************************************************************

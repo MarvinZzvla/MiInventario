@@ -1,3 +1,7 @@
 package com.vendetta.miinventario.data.structures
 
-data class NuevaVentaDatos (val id:Int,val name: String,val cantidad:Int,val precio_total:Float,val precio_sell_total:Float)
+import java.io.Serializable
+import java.util.Date
+
+
+data class NuevaVentaDatos (val id:Int,val name: String,val cantidad:Int,val precio_total:Float,val precio_sell_total:Float, val date: String):Serializable

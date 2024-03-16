@@ -29,12 +29,17 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vendetta.miinventario.adapter.FacturaAdapter
 import com.vendetta.miinventario.adapter.ProductosAdapter
+import com.vendetta.miinventario.data.Factura
 import com.vendetta.miinventario.data.FacturaProvider
 import com.vendetta.miinventario.data.ProductosProvider
+import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import java.io.IOException
 import java.lang.StringBuilder
 import java.nio.charset.Charset
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class FacturaPage : AppCompatActivity() {
@@ -51,19 +56,23 @@ class FacturaPage : AppCompatActivity() {
     private var readBufferPosition = 0
     private val MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN = 1
 
-
     @Volatile
     var stopWorker = false
     private var value = ""
     private val connectionClass : ConnectionClass = ConnectionClass()
+    var listProductos = arrayListOf<NuevaVentaDatos>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFacturaPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Get List Of Productos from Nueva Venta Activity
+        listProductos = intent.getStringArrayListExtra("arrayVenta") as ArrayList<NuevaVentaDatos>
+        loadInfo()
+
         initAdapter()
 
-        binding.printerName.isFocusable=false
+        binding.printerName.isEnabled=false
 
         binding.selectBt.setOnClickListener {
             println("Funcion")
@@ -110,12 +119,27 @@ class FacturaPage : AppCompatActivity() {
 
             }
         }
+
+    }
+
+    private fun loadInfo() {
+        val producto = listProductos[0]
+        val totalPrice = intent.getFloatExtra("totalPrice",0.0f)
+        val idFactura = intent.getIntExtra("factura_number",0)
+        println(listProductos)
+        binding.facturaNumber.text = "Factura #: $idFactura"
+        binding.facturaDate.text = "Fecha: ${producto.date}"
+        binding.facturaTotalText.text = "Total: $$totalPrice"
     }
 
     private fun initAdapter() {
+        var facturaList = arrayListOf<Factura>()
+        for(producto in listProductos){
+            facturaList += Factura(producto.name,producto.cantidad,producto.precio_total)
+        }
         val recyclerView = binding.recycleFactura
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = FacturaAdapter(FacturaProvider.facturaList)
+        recyclerView.adapter = FacturaAdapter(facturaList)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

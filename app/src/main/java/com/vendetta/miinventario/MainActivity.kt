@@ -7,6 +7,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.common.moduleinstall.ModuleInstall
+import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
 import com.vendetta.miinventario.data.database.entities.UserEntity
@@ -23,6 +26,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        initScanner()
         //Cargar sesion activa
         loadPrefs()
 
@@ -57,6 +62,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
     } //END ONCREATE
+
+    private fun initScanner() {
+        val moduleInstall = ModuleInstall.getClient(this)
+        val moduleInstallRequest = ModuleInstallRequest.newBuilder()
+            .addApi(GmsBarcodeScanning.getClient(this))
+            .build()
+        moduleInstall
+            .installModules(moduleInstallRequest)
+            .addOnSuccessListener {
+                if (it.areModulesAlreadyInstalled()) {
+                    // Modules are already installed when the request is sent.
+                }
+            }
+            .addOnFailureListener {
+                // Handle failure…
+            }
+    }
 
     private fun readUsers(users: List<UserEntity>) {
         val name = users[0].user ?: ""

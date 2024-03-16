@@ -12,7 +12,7 @@ class VentaDropdownProvider {
         val productosList = database.productosDao.getAllProductos()
         var dropdownList = listOf<VentaDropdown>()
         for (producto in productosList){
-            dropdownList += VentaDropdown(producto.ID,producto.Name,producto.Available.toString(),producto.Price,producto.Price_Sell)
+            dropdownList += VentaDropdown(producto.ID,producto.Name,producto.Available.toString(),producto.Price,producto.Price_Sell,producto.BarCode)
         }
 
 //        val dropdownList = listOf<VentaDropdown>(
