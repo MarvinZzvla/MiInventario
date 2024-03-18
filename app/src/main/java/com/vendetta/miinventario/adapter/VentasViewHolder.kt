@@ -1,10 +1,9 @@
 package com.vendetta.miinventario.adapter
 
 import android.view.View
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.vendetta.miinventario.R
 import com.vendetta.miinventario.data.Ventas
+import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import com.vendetta.miinventario.databinding.ItemVentasBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -16,7 +15,8 @@ class VentasViewHolder(view : View) : ViewHolder(view) {
     val ventas = binding.listaVentas
     val totalVentas = binding.totalVentaText
     val gananciaVentas = binding.totalGananciaText
-    fun render(venta: Ventas){
+
+    fun render(venta: Ventas, onItemClicked: (Ventas) -> Unit){
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
         date.text = simpleDateFormat.format(venta.fecha)
@@ -25,5 +25,6 @@ class VentasViewHolder(view : View) : ViewHolder(view) {
         ventas.text = venta.objetos.dropLast(1)
         totalVentas.text = "$${venta.totalVenta.toString()}"
         gananciaVentas.text = "$${venta.totalGanancia.toString()}"
+        binding.root.setOnClickListener{onItemClicked(venta)}
     }
 }

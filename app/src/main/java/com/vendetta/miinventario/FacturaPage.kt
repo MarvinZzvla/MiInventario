@@ -20,19 +20,25 @@ import com.vendetta.miinventario.databinding.ActivityFacturaPageBinding
 import java.io.InputStream
 import java.io.OutputStream
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vendetta.miinventario.adapter.FacturaAdapter
 import com.vendetta.miinventario.adapter.ProductosAdapter
 import com.vendetta.miinventario.data.Factura
 import com.vendetta.miinventario.data.FacturaProvider
 import com.vendetta.miinventario.data.ProductosProvider
+import com.vendetta.miinventario.data.database.InventarioDatabase
+import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.lang.StringBuilder
 import java.nio.charset.Charset
@@ -45,6 +51,7 @@ import java.util.UUID
 class FacturaPage : AppCompatActivity() {
 
     lateinit var binding: ActivityFacturaPageBinding
+    private lateinit var database: InventarioDatabase
     private var btPermission = false
     var bluetoothAdapter : BluetoothAdapter? = null
     var socket : BluetoothSocket? = null
@@ -66,6 +73,7 @@ class FacturaPage : AppCompatActivity() {
         binding = ActivityFacturaPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        database = getDatabase(this)
         //Get List Of Productos from Nueva Venta Activity
         listProductos = intent.getStringArrayListExtra("arrayVenta") as ArrayList<NuevaVentaDatos>
         loadInfo()
@@ -73,6 +81,11 @@ class FacturaPage : AppCompatActivity() {
         initAdapter()
 
         binding.printerName.isEnabled=false
+
+        binding.btnDeleteFactura.setOnClickListener {
+            val idFactura = intent.getIntExtra("factura_number",0)
+            displayDialog(idFactura)
+        }
 
         binding.selectBt.setOnClickListener {
             println("Funcion")
@@ -126,10 +139,34 @@ class FacturaPage : AppCompatActivity() {
         val producto = listProductos[0]
         val totalPrice = intent.getFloatExtra("totalPrice",0.0f)
         val idFactura = intent.getIntExtra("factura_number",0)
-        println(listProductos)
         binding.facturaNumber.text = "Factura #: $idFactura"
         binding.facturaDate.text = "Fecha: ${producto.date}"
         binding.facturaTotalText.text = "Total: $$totalPrice"
+    }
+
+    private fun displayDialog(id:Int) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Eliminar esta venta")
+        builder.setMessage("¿Deseas eliminar esta venta y factura permanentemente?")
+
+        // Configurar el botón de "Sí"
+        builder.setPositiveButton("Sí") { dialog, which ->
+            // Acciones a realizar cuando el usuario presiona "Sí"
+            lifecycleScope.launch(Dispatchers.Main) {
+                database.ventasDao.deleteById(id)
+                Intent(applicationContext,HomePage::class.java).apply {
+                    startActivity(this)
+                }
+            }
+        }
+
+        // Configurar el botón de "No"
+        builder.setNegativeButton("No") { dialog, which ->
+            // Acciones a realizar cuando el usuario presiona "No"
+        }
+
+        // Mostrar el diálogo
+        builder.show()
     }
 
     private fun initAdapter() {

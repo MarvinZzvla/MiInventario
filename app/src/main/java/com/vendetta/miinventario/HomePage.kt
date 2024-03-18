@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
@@ -20,10 +19,13 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.vendetta.miinventario.adapter.ProductosAdapter
 import com.vendetta.miinventario.adapter.VentasAdapter
 import com.vendetta.miinventario.data.ProductosProvider
+import com.vendetta.miinventario.data.Ventas
 import com.vendetta.miinventario.data.VentasProvider
+import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import com.vendetta.miinventario.databinding.ActivityHomePageBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -76,11 +78,12 @@ class HomePage : AppCompatActivity() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {
         super.onStart()
         //Cargar los recycles views
-        initRecycleViewVentas()
-        initRecycleViewProductos()
+        binding.recycleVentas.adapter?.notifyDataSetChanged()
+        binding.recycleProductos.adapter?.notifyDataSetChanged()
     }
 
     private fun initScanner() {
@@ -116,7 +119,29 @@ class HomePage : AppCompatActivity() {
     private fun initRecycleViewVentas() {
         val recyclerView = binding.recycleVentas
         recyclerView.layoutManager = LinearLayoutManager(this)
-        lifecycleScope.launch(Dispatchers.Main) {recyclerView.adapter = VentasAdapter(VentasProvider().getAllVentas(applicationContext))}
+        lifecycleScope.launch(Dispatchers.Main) {recyclerView.adapter = VentasAdapter(VentasProvider().getAllVentas(applicationContext)){onItemClickedVentas(it)} }
+    }
+
+    /**************************************************************************************
+     * On Item Clicked Ventas
+     * When a recycle view item is clicked display this function
+     ****************************************************************************************/
+    fun onItemClickedVentas(ventas: Ventas) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val ventaList = VentasProvider().getVentabyId(applicationContext,ventas.factura) as ArrayList<NuevaVentaDatos>
+            println(ventaList)
+            withContext(Dispatchers.Main){
+                Intent(applicationContext,FacturaPage::class.java).apply {
+                    putExtra("arrayVenta",ventaList)
+                    putExtra("factura_number",ventas.factura)
+                    putExtra("totalPrice",ventas.totalVenta)
+                    startActivity(this)
+
+                }
+            }
+        }
+
+
     }
 
     /************************************************************

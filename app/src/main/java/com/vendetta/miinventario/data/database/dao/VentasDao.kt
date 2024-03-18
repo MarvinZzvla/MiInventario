@@ -21,6 +21,8 @@ suspend fun delete(venta: VentasEntity)
 suspend fun getAllVentas():List<VentasDatabase>
 @Query(value = "DELETE FROM Ventas")
 suspend fun deleteAll()
+@Query(value = "DELETE FROM Ventas WHERE ID_Factura = :idFactura")
+suspend fun deleteById(idFactura : Int)
 @Query(value = "SELECT MAX(ID_Factura) FROM VENTAS")
 suspend fun getMaxIdFactura():Int?
 
