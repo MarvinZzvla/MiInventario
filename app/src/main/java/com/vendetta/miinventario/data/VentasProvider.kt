@@ -34,7 +34,7 @@ class VentasProvider {
             val formato = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
             for (elemento in ventasDatabaseList){
                 if(idFactura == elemento.ID_Factura) {
-                    name += elemento.Name + ","
+                    name += elemento.productos + ","
                     date = formato.parse(elemento.Date)?:Date()
                     price += elemento.Price
                     profit += elemento.Profit
@@ -45,7 +45,7 @@ class VentasProvider {
             ventaList += Ventas(date,id,name,price,profit)
         }
 
-        return ventaList
+        return ventaList.sortedByDescending{it.factura}
     }
 
     suspend fun getVentabyId(context: Context,id: Int):ArrayList<NuevaVentaDatos>{
@@ -59,7 +59,7 @@ class VentasProvider {
                 listaVenta.add(
                     NuevaVentaDatos(
                         venta.ID_Factura,
-                        venta.Name,
+                        venta.productos,
                         venta.Quantity,
                         totalPrice,
                         totalProfit,
@@ -71,22 +71,4 @@ class VentasProvider {
         return listaVenta
     }
 
-
-//    companion object{
-//        val ventaList = listOf<Ventas>(
-//            Ventas(
-//                Date(),
-//                1,
-//                "Camiseta,Pantalon,Pantalon,Pantalon,Pantalon,Pantalon,Pantalon,Pantalon,Pantalon",
-//                486.00f,
-//                120.00f),
-//            Ventas(
-//                Date(),
-//                2,
-//                "Licra,Pantalon",
-//                200.00f,
-//                120.00f),
-//
-//        )
-//    }
 }

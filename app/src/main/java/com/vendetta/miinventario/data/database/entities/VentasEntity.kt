@@ -11,6 +11,8 @@ data class VentasEntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
     val id: Int = 0,
+    @ColumnInfo(name = "Productos" )
+    val productos : String = "",
     @ColumnInfo(name = "FK_Producto")
     val FK_Producto: String = "",
     @ColumnInfo(name = "Date")
@@ -23,6 +25,5 @@ data class VentasEntity (
     val Profit : Float = 0.0f,
     @ColumnInfo(name = "ID_Factura")
     val ID_Factura : Int = 0
-
 
 )

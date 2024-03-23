@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vendetta.miinventario.R
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 
-class NuevaVentaAdapter(private val productoList : List<NuevaVentaDatos>, ): RecyclerView.Adapter<NuevaVentaViewHolder>() {
+class NuevaVentaAdapter(private val productoList : List<NuevaVentaDatos> ): RecyclerView.Adapter<NuevaVentaViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NuevaVentaViewHolder {

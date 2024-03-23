@@ -154,6 +154,7 @@ class FacturaPage : AppCompatActivity() {
             // Acciones a realizar cuando el usuario presiona "Sí"
             lifecycleScope.launch(Dispatchers.Main) {
                 database.ventasDao.deleteById(id)
+                database.finanzasDao.deleteFinanzas(id)
                 Intent(applicationContext,HomePage::class.java).apply {
                     startActivity(this)
                 }
@@ -547,5 +548,14 @@ try {
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val isView = intent.getBooleanExtra("isView",false)
+        if(!isView){
+            Intent(this,HomePage::class.java).apply { startActivity(this) }
+        }
+
     }
 }

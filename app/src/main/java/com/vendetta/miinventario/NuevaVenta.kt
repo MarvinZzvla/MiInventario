@@ -25,6 +25,7 @@ import com.vendetta.miinventario.data.VentaDropdown
 import com.vendetta.miinventario.data.VentaDropdownProvider
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
+import com.vendetta.miinventario.data.database.entities.FinanzasEntity
 import com.vendetta.miinventario.data.database.entities.VentasEntity
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import com.vendetta.miinventario.databinding.ActivityNuevaVentaBinding
@@ -216,14 +217,25 @@ class NuevaVenta : AppCompatActivity() {
         //Get the last ID
         val idFactura = database.ventasDao.getMaxIdFactura() ?: 0
         //Get the product and transform it into VentasEntity
+        //saveVentaFinanzas(arrayVenta)
         for (venta in arrayVenta) {
-            val venta = VentasEntity(
+            //INSERT VENTAS IN DATABASE
+            val ventas = VentasEntity(
+                productos = venta.name,
                 FK_Producto = venta.id.toString(), Date = date,
                 Quantity = venta.cantidad, Price = venta.precio_total,
                 Profit = venta.precio_sell_total, ID_Factura = (idFactura + 1)
             )
-            //Insert the product
-            database.ventasDao.insertAll(venta)
+            //INSERT FINANZAS IN THE DATABASE
+            val finanzas = FinanzasEntity(
+                Date = date, Total =  venta.precio_total,
+                TotalGanancias = venta.precio_sell_total,
+                FK_Venta = (idFactura + 1)
+            )
+            //Insert the product in Ventas TABLE
+            database.ventasDao.insertAll(ventas)
+            //Insert product finanzas in FINANZAS TABLE
+            database.finanzasDao.insert(finanzas)
         }
         val arrayVentaTmp = ArrayList(arrayVenta)
         //Clear
@@ -237,6 +249,10 @@ class NuevaVenta : AppCompatActivity() {
             putExtra("totalPrice",totalPrecio)
             startActivity(this)
         }
+    }
+
+    private fun saveVentaFinanzas(arrayVenta: ArrayList<NuevaVentaDatos>) {
+
     }
 
 

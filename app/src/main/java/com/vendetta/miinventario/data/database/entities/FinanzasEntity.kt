@@ -5,12 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "Finanzas", foreignKeys = [ForeignKey(
-    entity = VentasEntity::class,
-    parentColumns = ["ID"],
-    childColumns = ["FK_Venta"],
-    onDelete = ForeignKey.CASCADE
-)])
+@Entity(tableName = "Finanzas")
 data class FinanzasEntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
@@ -22,5 +17,5 @@ data class FinanzasEntity (
     @ColumnInfo(name = "Total_Ganancias")
     val TotalGanancias:Float =0.0f ,
     @ColumnInfo(name = "FK_Venta")
-    val FK_Venta:String =""
+    val FK_Venta:Int =0
 )

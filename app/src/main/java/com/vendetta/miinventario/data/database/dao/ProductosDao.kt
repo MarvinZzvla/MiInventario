@@ -12,7 +12,7 @@ interface ProductosDao {
     @Insert
     suspend fun insertAll(producto: ProductosEntity):Long
     @Update
-    suspend fun update(producto: ProductosEntity)
+    suspend fun update(producto: ProductosEntity):Int
     @Delete
     suspend fun delete(producto: ProductosEntity)
     @Query(value = "SELECT * FROM Productos")
