@@ -39,6 +39,7 @@ import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getD
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.lang.StringBuilder
 import java.nio.charset.Charset
@@ -144,6 +145,14 @@ class FacturaPage : AppCompatActivity() {
         binding.facturaTotalText.text = "Total: $$totalPrice"
     }
 
+    suspend fun updateProductos(){
+        println("Lista de : " +listProductos)
+        for (producto in listProductos){
+            println("Este es el " + producto)
+            database.productosDao.sumarCantidadById(producto.id,producto.cantidad)
+        }
+    }
+
     private fun displayDialog(id:Int) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Eliminar esta venta")
@@ -152,11 +161,14 @@ class FacturaPage : AppCompatActivity() {
         // Configurar el botón de "Sí"
         builder.setPositiveButton("Sí") { dialog, which ->
             // Acciones a realizar cuando el usuario presiona "Sí"
-            lifecycleScope.launch(Dispatchers.Main) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 database.ventasDao.deleteById(id)
                 database.finanzasDao.deleteFinanzas(id)
-                Intent(applicationContext,HomePage::class.java).apply {
-                    startActivity(this)
+                updateProductos()
+                withContext(Dispatchers.Main) {
+                    Intent(applicationContext, HomePage::class.java).apply {
+                        startActivity(this)
+                    }
                 }
             }
         }

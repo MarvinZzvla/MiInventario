@@ -20,4 +20,12 @@ interface ProductosDao {
 
     @Query(value = "DELETE FROM Productos")
     suspend fun deleteAll()
+
+    @Query(value = "UPDATE Productos SET Available = :cantidad WHERE ID = :id")
+    suspend fun updateById(id:Int,cantidad:Int)
+
+    @Query(value = "UPDATE Productos SET Available = Available+:valor WHERE ID = :id")
+    suspend fun sumarCantidadById(id: Int, valor:Int)
+    @Query(value = "UPDATE Productos SET Available = Available-:valor WHERE ID = :id")
+    suspend fun restarCantidadById(id: Int, valor:Int)
 }

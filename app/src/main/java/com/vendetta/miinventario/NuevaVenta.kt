@@ -4,34 +4,29 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.widget.Adapter
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.vendetta.miinventario.adapter.DropdownAdapter
 import com.vendetta.miinventario.adapter.NuevaVentaAdapter
+import com.vendetta.miinventario.data.Productos
 import com.vendetta.miinventario.data.VentaDropdown
 import com.vendetta.miinventario.data.VentaDropdownProvider
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
 import com.vendetta.miinventario.data.database.entities.FinanzasEntity
+import com.vendetta.miinventario.data.database.entities.ProductosEntity
 import com.vendetta.miinventario.data.database.entities.VentasEntity
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import com.vendetta.miinventario.databinding.ActivityNuevaVentaBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.Format
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -145,6 +140,7 @@ class NuevaVenta : AppCompatActivity() {
 
             }
     }
+
     /************************************************
      * AddtoRecycle
      * Verify Editables and Save tmp producto
@@ -182,28 +178,33 @@ class NuevaVenta : AppCompatActivity() {
         var id = binding.nuevaVentaIDText.text.toString().toInt()
         var name = binding.nuevaVentaNameProductoText.text.toString()
         var cantidad = binding.nuevaVentaCantidadText.text.toString().toInt()
-        var precio = binding.nuevaVentaPrecioText.text.toString().toFloat()
-        var precio_venta = binding.nuevaVentaProfitText.text.toString().toFloat()
-        var totalprecioTmp = precio * cantidad // Get the total price
-        var totalprofitTmp = (precio - precio_venta) * cantidad //Get the total profit
-        totalPrecio += precio * cantidad //Add to current total price the new price
-        totalGanancia += (precio - precio_venta) * cantidad //Add to current total profit the new profit
-        val formato = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        var date = formato.format(Date())
-        //Add producto into array
-        val datosTmp = NuevaVentaDatos(id, name, cantidad, totalprecioTmp, totalprofitTmp,date)
-        arrayVenta.add(datosTmp)
+        if (checkQuantity(id,cantidad)) {
+            var precio = binding.nuevaVentaPrecioText.text.toString().toFloat()
+            var precio_venta = binding.nuevaVentaProfitText.text.toString().toFloat()
+            var totalprecioTmp = precio * cantidad // Get the total price
+            var totalprofitTmp = (precio - precio_venta) * cantidad //Get the total profit
+            totalPrecio += precio * cantidad //Add to current total price the new price
+            totalGanancia += (precio - precio_venta) * cantidad //Add to current total profit the new profit
+            val formato = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            var date = formato.format(Date())
+            //Add producto into array
+            val datosTmp = NuevaVentaDatos(id, name, cantidad, totalprecioTmp, totalprofitTmp, date)
+            arrayVenta.add(datosTmp)
 
-        //Reset editables
-        binding.nuevaVentaNameProductoText.text.clear()
-        binding.nuevaVentaCantidadText.text.clear()
-        binding.nuevaVentaPrecioText.text.clear()
-        binding.autoCompleteText.text.clear()
-        //Update the total
-        binding.nuevaVentaTotalText.setText("Total Gastado: \n$${totalPrecio}")
+            //Reset editables
+            binding.nuevaVentaNameProductoText.text.clear()
+            binding.nuevaVentaCantidadText.text.clear()
+            binding.nuevaVentaPrecioText.text.clear()
+            binding.autoCompleteText.text.clear()
+            //Update the total
+            binding.nuevaVentaTotalText.setText("Total Gastado: \n$${totalPrecio}")
 
-        //Add product into Shop Cart
-        binding.recycleViewNuevaVenta.adapter = NuevaVentaAdapter(arrayVenta)
+            //Add product into Shop Cart
+            binding.recycleViewNuevaVenta.adapter = NuevaVentaAdapter(arrayVenta)
+        }
+        else{
+            Toast.makeText(this,"No hay suficiente cantidad de este producto",Toast.LENGTH_SHORT).show()
+        }
     }
 
     /***********************************************************************************
@@ -217,8 +218,8 @@ class NuevaVenta : AppCompatActivity() {
         //Get the last ID
         val idFactura = database.ventasDao.getMaxIdFactura() ?: 0
         //Get the product and transform it into VentasEntity
-        //saveVentaFinanzas(arrayVenta)
         for (venta in arrayVenta) {
+            val producto  = listOfProductos.find { it.idProducto == venta.id }
             //INSERT VENTAS IN DATABASE
             val ventas = VentasEntity(
                 productos = venta.name,
@@ -226,14 +227,17 @@ class NuevaVenta : AppCompatActivity() {
                 Quantity = venta.cantidad, Price = venta.precio_total,
                 Profit = venta.precio_sell_total, ID_Factura = (idFactura + 1)
             )
+
             //INSERT FINANZAS IN THE DATABASE
             val finanzas = FinanzasEntity(
-                Date = date, Total =  venta.precio_total,
+                Date = date, Total = venta.precio_total,
                 TotalGanancias = venta.precio_sell_total,
                 FK_Venta = (idFactura + 1)
             )
             //Insert the product in Ventas TABLE
             database.ventasDao.insertAll(ventas)
+            //Update Quantity of Producto
+            producto?.cantidad?.let { database.productosDao.updateById(venta.id, it.toInt()) }
             //Insert product finanzas in FINANZAS TABLE
             database.finanzasDao.insert(finanzas)
         }
@@ -244,17 +248,12 @@ class NuevaVenta : AppCompatActivity() {
         binding.recycleViewNuevaVenta.adapter = NuevaVentaAdapter(arrayVenta)
         //Start Receipt Screen
         Intent(this, FacturaPage::class.java).apply {
-            putExtra("arrayVenta",arrayVentaTmp)
-            putExtra("factura_number",idFactura + 1)
-            putExtra("totalPrice",totalPrecio)
+            putExtra("arrayVenta", arrayVentaTmp)
+            putExtra("factura_number", idFactura + 1)
+            putExtra("totalPrice", totalPrecio)
             startActivity(this)
         }
     }
-
-    private fun saveVentaFinanzas(arrayVenta: ArrayList<NuevaVentaDatos>) {
-
-    }
-
 
     /**********************************************************************************
      * Verify Fields
@@ -268,6 +267,29 @@ class NuevaVenta : AppCompatActivity() {
         return !(name.isNullOrBlank() && cantidad.isNullOrEmpty() && precio.isNullOrEmpty())
     }
 
+    /*******************************************************************
+     * Check Quantity
+     * This function determinates if there's exist enough product to sell
+     ***********************************************************************/
+    private fun checkQuantity(id: Int, cantidad: Int): Boolean {
+        //Get the producto in database to search
+        val indice = listOfProductos.indexOfFirst { it.idProducto == id }
+        //If product exist
+        if(indice != -1) {
+            //If there's enough product
+            if(listOfProductos[indice].cantidad.toInt() >= cantidad){
+                //Remove cantidad to sell to database temporal list
+                listOfProductos[indice].cantidad = (listOfProductos[indice].cantidad.toInt() - cantidad).toString()
+                return true //Return true if there's enough existences and remove the quantity sell in the list
+            }
+        }
+        return false
+    }
+
+    /********************************************************************************
+     * DisplayDialog
+     * This function display a dialog box to ask to user to continue the process
+     ******************************************************************************/
     private fun displayDialog() {
         builder.setTitle("Procesar Pago")
         builder.setMessage("¿Estás seguro?")

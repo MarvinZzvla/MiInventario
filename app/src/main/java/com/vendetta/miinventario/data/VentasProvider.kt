@@ -58,7 +58,7 @@ class VentasProvider {
                 var totalProfit = venta.Profit * venta.Quantity
                 listaVenta.add(
                     NuevaVentaDatos(
-                        venta.ID_Factura,
+                        venta.FK_Producto.toInt(),
                         venta.productos,
                         venta.Quantity,
                         totalPrice,
