@@ -1,8 +1,12 @@
 package com.vendetta.miinventario
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -57,10 +61,12 @@ class HomePage : AppCompatActivity() {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         date = format.format(Date()).toString()
 
+
         //Cargar los recycles views
         initRecycleViewVentas()
         initRecycleViewProductos()
         initTextWatchers()
+        initHomePage()
         initFinanzas(date,date)
 
         //Cuando sea seleccionado el boton de salir
@@ -94,6 +100,23 @@ class HomePage : AppCompatActivity() {
             initScanner()
         }
 
+    }
+
+    private fun initHomePage() {
+        val sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
+        binding.negocioNameText.text = sharedPreferences.getString("negocio","Mi inventario")
+
+        val uriString = sharedPreferences.getString("photo","")
+        if(uriString != ""){
+        val uri = Uri.parse(uriString)
+        val circularMask = ShapeDrawable(OvalShape())
+        circularMask.paint.color = Color.BLACK
+        circularMask.setBounds(0, 0, 64, 64)
+        // El archivo seleccionado es una imagen
+        binding.circularImageView.setImageURI(uri)
+        binding.circularImageView.background = circularMask
+        binding.circularImageView.clipToOutline = true
+            }
     }
 
     private fun initFinanzas(startDate: String, endDate: String) {

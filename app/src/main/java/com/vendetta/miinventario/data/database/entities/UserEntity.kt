@@ -18,5 +18,7 @@ data class UserEntity (
     @ColumnInfo(name = "phone")
     val telefono:String,
     @ColumnInfo(name = "pais")
-    val pais:String
+    val pais:String,
+    @ColumnInfo(name = "photo")
+    val photo:String
 )

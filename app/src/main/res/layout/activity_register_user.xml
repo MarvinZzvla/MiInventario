@@ -51,7 +51,7 @@
         android:hint="Ingresa tu usuario"
         android:padding="20dp"
         android:textSize="20sp"
-        app:layout_constraintVertical_bias="0.15"
+        app:layout_constraintVertical_bias="0.1"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +84,7 @@
         android:hint="Introduce tu PIN"
         android:padding="20dp"
         android:textSize="20sp"
-        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintVertical_bias="0.07"
         android:layout_marginTop="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
@@ -120,7 +120,7 @@
         android:hint="Nombre del negocio"
         android:padding="20dp"
         android:textSize="20sp"
-        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintVertical_bias="0.09"
         android:layout_marginTop="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
@@ -200,6 +200,44 @@
             app:layout_constraintStart_toEndOf="@+id/new_numeroText"
             app:layout_constraintTop_toBottomOf="@+id/textNumero" />
 
+        <TextView
+            android:id="@+id/textLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sube un logo"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/mairyextrabold"
+            app:layout_constraintTop_toBottomOf="@+id/paisDropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@id/textInfoLogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:textColor="#FAFAFA"
+            android:textSize="16sp"
+            android:fontFamily="@font/mairyextralight"
+            android:text="*Haz click en la imagen para cambiar el logo de lo contrario utilizaremos este logo"
+            app:layout_constraintTop_toBottomOf="@+id/textLogo"/>
+
+        <ImageView
+            android:id="@+id/logoNegocio"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@mipmap/ic_launcher_round"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInfoLogo" />
+
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
@@ -214,7 +252,7 @@
         android:text="Registrarte"
         app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@+id/new_numeroText" />
+        app:layout_constraintTop_toBottomOf="@+id/logoNegocio" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

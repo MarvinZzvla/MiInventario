@@ -64,6 +64,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.recoveryText.setOnClickListener {
+            Intent(this,RecoveryPage::class.java).apply { startActivity(this) }
+        }
     } //END ONCREATE
 
     private fun loadUser() {
@@ -72,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         var isRegister = sharedPreferences.getBoolean("isRegister", false)
         if(!isRegister){
             binding.btnRegister.visibility = View.VISIBLE
+            binding.recoveryText.visibility = View.GONE
         }
     }
 
@@ -95,6 +100,9 @@ class MainActivity : AppCompatActivity() {
     private fun readUsers(users: List<UserEntity>) {
         val name = users[0].user ?: ""
         val pin = users[0].pin ?: ""
+        val negocio = users[0].negocio?:"Mi inventario"
+        val phone = users[0].telefono?:""
+        val uriPhoto = users[0].photo?:""
 
 
         if (users.isNotEmpty() && verifyUser(name, pin)) {
@@ -102,6 +110,9 @@ class MainActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit()
             sharedPreferences.putString("username", name)
             sharedPreferences.putString("pin", pin)
+            sharedPreferences.putString("negocio",negocio)
+            sharedPreferences.putString("phone",phone)
+            sharedPreferences.putString("photo",uriPhoto)
             sharedPreferences.putBoolean("isLogin", true)
             sharedPreferences.apply()
             Intent(this, HomePage::class.java).apply { startActivity(this) }

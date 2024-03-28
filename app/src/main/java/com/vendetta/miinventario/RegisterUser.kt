@@ -1,17 +1,28 @@
 package com.vendetta.miinventario
 
+import android.Manifest
 import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
@@ -28,9 +39,12 @@ import kotlinx.serialization.Serializable
 import java.util.Locale
 
 class RegisterUser : AppCompatActivity() {
+    val REQUEST_CODE_IMAGES = 100
+    val REQUEST_CODE_PICK_IMAGE = 1
     private lateinit var binding: ActivityRegisterUserBinding
     private lateinit var database: InventarioDatabase
     private lateinit var supabase: SupabaseClient
+    var imageUriDatabase = ""
     val paisesDeHablaHispana = listOf(
         "", "Argentina", "Andorra", "Bolivia", "Chile", "Colombia", "Costa Rica", "Cuba",
         "Ecuador", "El Salvador", "España", "Guatemala", "Guinea Ecuatorial",
@@ -67,10 +81,69 @@ class RegisterUser : AppCompatActivity() {
             val phone = binding.newNumeroText.text
             var pais = binding.paisDropdown.selectedItem.toString()
             if (checkFields(userName, pin,negocio,phone,pais)) {
-                saveUser(userName.toString(), pin.toString(), negocio.toString(), phone.toString(), pais)
+               saveUser(userName.toString(), pin.toString(), negocio.toString(), phone.toString(), pais)
             } else {
                 it.isEnabled = true
                 Toast.makeText(this, "Llene todos los campos", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
+        binding.logoNegocio.setOnClickListener {
+            val permission =if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE_IMAGES)
+            }
+            else{
+                openGallery()
+            }
+        }
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_IMAGES) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso otorgado, puedes acceder a imágenes
+                openGallery()
+            } else {
+                // Permiso denegado, maneja la situación
+                Toast.makeText(this,"No es posible abrir galeria",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
+             var imageUri = data?.data
+            if (imageUri != null) {
+                imageUriDatabase = imageUri.toString()
+                val mimeType = contentResolver.getType(imageUri)
+                if (mimeType != null && mimeType.startsWith("image/")) {
+                    val circularMask = ShapeDrawable(OvalShape())
+                    circularMask.paint.color = Color.BLACK
+                    circularMask.setBounds(0, 0, 64, 64)
+                    // El archivo seleccionado es una imagen
+                    binding.logoNegocio.setImageURI(imageUri)
+                    binding.logoNegocio.background = circularMask
+                    binding.logoNegocio.clipToOutline = true
+                } else {
+                    // El archivo no es una imagen
+                    Toast.makeText(this, "Selecciona un archivo de imagen válido", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Maneja el caso en el que no se seleccionó ninguna imagen
+                Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -102,7 +175,7 @@ class RegisterUser : AppCompatActivity() {
            database.userDao.insertAll(
                 UserEntity(
                     id = 1, user = userName, pin = pin, negocio = negocio.capitalizeFirstLetter(),
-                    telefono = phone, pais = pais
+                    telefono = phone, pais = pais,imageUriDatabase
                 )
             )
             val user =  UserEntitySupabase(user = userName, pin = pin, negocio = negocio.capitalizeFirstLetter(),phone = phone, pais = pais)
