@@ -114,6 +114,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_bias="0"
         android:fontFamily="@font/mairyextrabold"
+        android:visibility="invisible"
         android:textSize="20sp"
         android:text="Registrarse"
         app:layout_constraintStart_toStartOf="parent"

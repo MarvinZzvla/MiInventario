@@ -2,9 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
-    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
-
+    id "org.jetbrains.kotlin.plugin.serialization" version "1.9.23"
 }
 
 android {
@@ -22,6 +21,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -30,6 +30,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildTypes.each {
+        it.buildConfigField 'String', 'SUPABASE_API_KEY', SUPABASE_API_KEY
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,7 +44,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
@@ -54,7 +57,10 @@ dependencies {
     implementation "androidx.room:room-runtime:2.6.1"
     implementation 'androidx.room:room-ktx:2.6.1'
     kapt "androidx.room:room-compiler:2.6.1"
-
+    //Supabase
+    implementation platform("io.github.jan-tennert.supabase:bom:2.0.0-rc-1")
+    implementation 'io.github.jan-tennert.supabase:postgrest-kt'
+    implementation 'io.ktor:ktor-client-android:2.3.9'
 
 
 }

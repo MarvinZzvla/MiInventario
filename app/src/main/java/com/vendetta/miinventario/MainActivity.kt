@@ -4,6 +4,7 @@ package com.vendetta.miinventario
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         initScanner()
         //Cargar sesion activa
         loadPrefs()
+        //Permitir registro
+        loadUser()
 
         binding.btnRegister.setOnClickListener {
             Intent(this, RegisterUser::class.java).apply { startActivity(this) }
@@ -62,6 +65,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
     } //END ONCREATE
+
+    private fun loadUser() {
+
+        val sharedPreferences = getSharedPreferences("login_users", Context.MODE_PRIVATE)
+        var isRegister = sharedPreferences.getBoolean("isRegister", false)
+        if(!isRegister){
+            binding.btnRegister.visibility = View.VISIBLE
+        }
+    }
 
     private fun initScanner() {
         val moduleInstall = ModuleInstall.getClient(this)

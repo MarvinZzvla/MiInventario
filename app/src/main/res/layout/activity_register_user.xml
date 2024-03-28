@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_main"
     tools:context=".RegisterUser">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/textRegister"
@@ -81,11 +85,120 @@
         android:padding="20dp"
         android:textSize="20sp"
         app:layout_constraintVertical_bias="0.1"
-        android:layout_margin="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/user_text"
         app:layout_constraintStart_toStartOf="@+id/user_text"
         app:layout_constraintTop_toBottomOf="@+id/user_text" />
+
+    <TextView
+        android:id="@+id/textNegocio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre del negocio"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/mairyextrabold"
+        app:layout_constraintBottom_toTopOf="@+id/new_negocioText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <EditText
+        android:id="@+id/new_negocioText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="@font/mairyextralight"
+        android:background="@drawable/edit_text_background"
+        android:inputType="text"
+        android:hint="Nombre del negocio"
+        android:padding="20dp"
+        android:textSize="20sp"
+        app:layout_constraintVertical_bias="0.1"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/new_pinText"
+        app:layout_constraintStart_toStartOf="@+id/new_pinText"
+        app:layout_constraintTop_toBottomOf="@+id/new_pinText" />
+
+        <TextView
+            android:id="@+id/textNumero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teléfono"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/mairyextrabold"
+            app:layout_constraintTop_toBottomOf="@+id/new_negocioText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <EditText
+            android:id="@+id/new_numeroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:fontFamily="@font/mairyextralight"
+            android:background="@drawable/edit_text_background"
+            android:inputType="number"
+            android:hint="Numero de teléfono"
+            android:padding="20dp"
+            android:textSize="20sp"
+            app:layout_constraintVertical_bias="0.1"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/paisDropdown"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textNumero" />
+
+        <TextView
+            android:id="@+id/textPais"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pais"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/mairyextrabold"
+            app:layout_constraintTop_toBottomOf="@+id/new_negocioText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/paisDropdown"/>
+
+        <Spinner
+            android:id="@+id/paisDropdown"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:fontFamily="@font/mairyextralight"
+            android:background="@drawable/edit_text_background"
+            android:inputType="text"
+            android:padding="20dp"
+            android:textSize="20sp"
+            app:layout_constraintVertical_bias="0.1"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/new_numeroText"
+            app:layout_constraintTop_toBottomOf="@+id/textNumero" />
 
     <Button
         android:id="@+id/btnLogin"
@@ -101,8 +214,8 @@
         android:text="Registrarte"
         app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@+id/new_pinText" />
+        app:layout_constraintTop_toBottomOf="@+id/new_numeroText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

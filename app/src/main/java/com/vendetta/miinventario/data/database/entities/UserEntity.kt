@@ -12,5 +12,11 @@ data class UserEntity (
     @ColumnInfo(name = "user")
     val user: String,
     @ColumnInfo(name = "pin")
-    val pin:String
+    val pin:String,
+    @ColumnInfo(name = "negocio")
+    val negocio:String,
+    @ColumnInfo(name = "phone")
+    val telefono:String,
+    @ColumnInfo(name = "pais")
+    val pais:String
 )
