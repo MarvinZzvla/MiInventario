@@ -21,6 +21,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.util.Log
@@ -137,12 +138,18 @@ class FacturaPage : AppCompatActivity() {
     }
 
     private fun loadInfo() {
+        val sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
+        val negocio = sharedPreferences.getString("negocio","Mi inventario")
+        val phone = sharedPreferences.getString("phone","")
         val producto = listProductos[0]
         val totalPrice = intent.getFloatExtra("totalPrice",0.0f)
         val idFactura = intent.getIntExtra("factura_number",0)
         binding.facturaNumber.text = "Factura #: $idFactura"
         binding.facturaDate.text = "Fecha: ${producto.date}"
         binding.facturaTotalText.text = "Total: $$totalPrice"
+        binding.facturaNegocioName.text = negocio
+        binding.facturaPhone.text = "Telf: $phone"
+
     }
 
     suspend fun updateProductos(){

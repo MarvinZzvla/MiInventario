@@ -20,15 +20,26 @@
 
         <TextView
             android:id="@+id/factura_negocioName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mairyextrabold"
-            android:text="El Oferton"
+            android:text="Mi inventarario"
             android:textColor="@color/black"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="10dp"
+            android:textAlignment="center"
+            app:layout_constraintHorizontal_bias="0"
             android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnDeleteFactura"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/btnDeleteFactura"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/delete" />
 
         <TextView
             android:id="@+id/factura_infoText"
@@ -47,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mairyextralight"
-            android:text="Telf: 2523-2637"
+            android:text="Telf:"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -216,13 +227,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/factura_totalText" />
 
-        <ImageView
-            android:id="@+id/btnDeleteFactura"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/delete" />
+
 
         <TextView
             android:id="@+id/factura_text1"

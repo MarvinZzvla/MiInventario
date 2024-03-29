@@ -21,15 +21,16 @@ class RecoveryPage : AppCompatActivity() {
 
         database = getDatabase(this)
 
+        //Recupera el usuario y lo muestra
         binding.btnRecovery.setOnClickListener {
-            var text = binding.editTextRecovery.text.toString()
+            var text = binding.editTextRecovery.text.toString() //GET User Input
             lifecycleScope.launch((Dispatchers.IO)) {
-                var user = database.userDao.getAllUser()[0]
+                var user = database.userDao.getAllUser()[0] //LOAD User Database
 
                 withContext(Dispatchers.Main) {
+                    //If user input is equal to username, pin or phone, so display the info
                     if (user.user.toString() == text || user.pin.toString() == text || user.telefono.toString() == text) {
-                        println("Usuario encontrado")
-                        val textInfo = binding.displayInfdRecovery
+                        val textInfo = binding.displayInfoRecovery
                         textInfo.visibility = View.VISIBLE
                         textInfo.text = "Usuario: ${user.user}\nPIN: ${user.pin}\nTelefono: ${user.telefono}"
                     }
@@ -41,6 +42,6 @@ class RecoveryPage : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        binding.displayInfdRecovery.visibility = View.GONE
+        binding.displayInfoRecovery.visibility = View.GONE
     }
 }

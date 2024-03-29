@@ -73,7 +73,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextRecovery" />
 
     <TextView
-        android:id="@+id/displayInfdRecovery"
+        android:id="@+id/displayInfoRecovery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/btnRecovery"

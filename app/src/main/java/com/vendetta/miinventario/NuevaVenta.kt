@@ -297,7 +297,15 @@ class NuevaVenta : AppCompatActivity() {
         // Configurar el botón de "Sí"
         builder.setPositiveButton("Sí") { dialog, which ->
             // Acciones a realizar cuando el usuario presiona "Sí"
-            lifecycleScope.launch(Dispatchers.Main) { saveVentaDatabase() }
+            lifecycleScope.launch(Dispatchers.Main) {
+                if(arrayVenta.isNullOrEmpty()){
+                    Toast.makeText(applicationContext, "Porfavor ingresar al menos un articulo",Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    saveVentaDatabase()
+                }
+
+            }
         }
 
         // Configurar el botón de "No"
