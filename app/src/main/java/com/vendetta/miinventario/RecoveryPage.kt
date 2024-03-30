@@ -3,6 +3,7 @@ package com.vendetta.miinventario
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
@@ -33,6 +34,9 @@ class RecoveryPage : AppCompatActivity() {
                         val textInfo = binding.displayInfoRecovery
                         textInfo.visibility = View.VISIBLE
                         textInfo.text = "Usuario: ${user.user}\nPIN: ${user.pin}\nTelefono: ${user.telefono}"
+                    }
+                    else{
+                        Toast.makeText(applicationContext,"No hay registros con esa informacion",Toast.LENGTH_SHORT).show()
                     }
                 }
             }

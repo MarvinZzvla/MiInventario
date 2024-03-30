@@ -236,7 +236,7 @@ class HomePage : AppCompatActivity() {
     fun onItemClickedVentas(ventas: Ventas) {
         lifecycleScope.launch(Dispatchers.IO) {
             val ventaList = VentasProvider().getVentabyId(applicationContext,ventas.factura) as ArrayList<NuevaVentaDatos>
-            println(ventaList)
+
             withContext(Dispatchers.Main){
                 Intent(applicationContext,FacturaPage::class.java).apply {
                     putExtra("arrayVenta",ventaList)
@@ -289,7 +289,7 @@ class HomePage : AppCompatActivity() {
             if(listaFinanzas.size > 7){
                 listaFinanzas = listaFinanzas.takeLast(7).toMutableList()
             }
-            println(listaFinanzas)
+
         //Aqui van las entradas al grafico
         val entries = ArrayList<com.github.mikephil.charting.data.Entry>()
             for(element in listaFinanzas) {

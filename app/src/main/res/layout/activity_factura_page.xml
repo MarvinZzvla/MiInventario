@@ -242,6 +242,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/factura_text" />
 
+        <ImageView
+            android:id="@+id/btnShare"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@drawable/share"
+            app:layout_constraintTop_toBottomOf="@id/factura_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

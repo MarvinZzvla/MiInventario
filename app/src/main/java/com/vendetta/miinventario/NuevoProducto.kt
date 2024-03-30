@@ -261,7 +261,6 @@ class NuevoProducto : AppCompatActivity() {
 
         scanner.startScan().addOnSuccessListener { barcode ->
             val rawValue: String? = barcode.rawValue
-            println(rawValue)
             binding.nuevoProductoBarcodeText.setText(rawValue)
         }.addOnCanceledListener {
             //Task cancelled

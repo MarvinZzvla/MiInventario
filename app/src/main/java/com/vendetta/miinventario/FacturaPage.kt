@@ -20,14 +20,20 @@ import com.vendetta.miinventario.databinding.ActivityFacturaPageBinding
 import java.io.InputStream
 import java.io.OutputStream
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.net.Uri
+import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vendetta.miinventario.adapter.FacturaAdapter
@@ -41,6 +47,8 @@ import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.StringBuilder
 import java.nio.charset.Charset
@@ -65,11 +73,20 @@ class FacturaPage : AppCompatActivity() {
     private var readBufferPosition = 0
     private val MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN = 1
 
+    private var negocio = ""
+    private var phone = ""
+    private var totalPrice = ""
+    private var idFactura = 0
+
     @Volatile
     var stopWorker = false
     private var value = ""
     private val connectionClass : ConnectionClass = ConnectionClass()
     var listProductos = arrayListOf<NuevaVentaDatos>()
+
+    private val REQUEST_CODE_PERMISSIONS = 101
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFacturaPageBinding.inflate(layoutInflater)
@@ -90,7 +107,7 @@ class FacturaPage : AppCompatActivity() {
         }
 
         binding.selectBt.setOnClickListener {
-            println("Funcion")
+
             checkPermission()
         }
 
@@ -135,15 +152,66 @@ class FacturaPage : AppCompatActivity() {
             }
         }
 
+
+        binding.btnShare.setOnClickListener {
+            initShare()
+        }
     }
+
+    private fun initShare() {
+       val constraintLayout = binding.constraintLayout
+        val bitmap = captureView(constraintLayout)
+        val file = saveBitmap(bitmap, this)
+        if (file != null) {
+            shareFile(file, this)
+        }
+    }
+
+    fun captureView(view: View): Bitmap {
+        binding.btnDeleteFactura.visibility = View.INVISIBLE
+        binding.btnShare.visibility = View.INVISIBLE
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+    fun saveBitmap(bitmap: Bitmap, context: Context): File? {
+        binding.btnDeleteFactura.visibility = View.VISIBLE
+        binding.btnShare.visibility = View.VISIBLE
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+            val file = File(context.getExternalFilesDir(null), "screenshot.png")
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.close()
+            return file
+        } else {
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSIONS)
+            return null
+        }
+    }
+
+    fun shareFile(file: File, context: Context) {
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, uri)
+            type = "image/png"
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(Intent.createChooser(intent, "Compartir imagen"))
+    }
+
+
 
     private fun loadInfo() {
         val sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
-        val negocio = sharedPreferences.getString("negocio","Mi inventario")
-        val phone = sharedPreferences.getString("phone","")
+         negocio = sharedPreferences.getString("negocio","Mi inventario").toString()
+         phone = sharedPreferences.getString("phone","").toString()
+         totalPrice = intent.getFloatExtra("totalPrice",0.0f).toString()
+         idFactura = intent.getIntExtra("factura_number",0)
+
         val producto = listProductos[0]
-        val totalPrice = intent.getFloatExtra("totalPrice",0.0f)
-        val idFactura = intent.getIntExtra("factura_number",0)
         binding.facturaNumber.text = "Factura #: $idFactura"
         binding.facturaDate.text = "Fecha: ${producto.date}"
         binding.facturaTotalText.text = "Total: $$totalPrice"
@@ -153,9 +221,7 @@ class FacturaPage : AppCompatActivity() {
     }
 
     suspend fun updateProductos(){
-        println("Lista de : " +listProductos)
         for (producto in listProductos){
-            println("Este es el " + producto)
             database.productosDao.sumarCantidadById(producto.id,producto.cantidad)
         }
     }
@@ -205,6 +271,15 @@ class FacturaPage : AppCompatActivity() {
             MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN -> {
                 // Aquí manejas la respuesta del usuario a tu solicitud de permiso de Bluetooth
             }
+            REQUEST_CODE_PERMISSIONS -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // El permiso WRITE_EXTERNAL_STORAGE fue concedido
+                    initShare()
+                } else {
+                    // El permiso WRITE_EXTERNAL_STORAGE fue denegado
+
+                }
+            }
             else -> {
                 // Ignora todas las demás solicitudes de permisos
             }
@@ -223,19 +298,19 @@ fun scanBt(view:View){
     }
 
     fun checkPermission(){
-        println("Hello world")
+
         val bluetoothManager : BluetoothManager = getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
         if(bluetoothAdapter == null){
             //No soporta bluetooth
-            println("No soporta")
+
         }
         else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                println("Paso Version S")
+
                 bluetoothPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
             }else{
-                println("NO Paso Version S")
+
                 bluetoothPermissionLauncher.launch(Manifest.permission.BLUETOOTH_ADMIN)
             }
         }
@@ -402,7 +477,7 @@ fun scanBt(view:View){
             }
 
         }catch (ex: java.lang.Exception){
-            println("Error 2")
+
             println(ex.message)
             Toast.makeText(this, "BlueTooth Printer Not Connected",Toast.LENGTH_SHORT).show()
             socket = null
@@ -412,12 +487,12 @@ fun scanBt(view:View){
     fun print_inv(){
 try {
             var str : String
-            var invhdr: String = "EL oferton\n\n"// Header 1 Bussiness Name
-            var addr :String = "El oferton"
-            var mo:String = "Telf:2523-2637\n\n"//Numeros tercera linea //Telefono
+            var invhdr: String = "$negocio\n\n"// Header 1 Bussiness Name
+            var addr :String = "$negocio"
+            var mo:String = "Telf:$phone\n\n"//Numeros tercera linea //Telefono
             var gstin: String = "GST no"
-            var billno: String = "1"
-            var billdt : String = "19-01-2024 20:00"
+            var billno: String = "$idFactura"
+            var billdt : String = "${listProductos[0].date}"
             var tblno:String ="1"
             var stw: String =""
             var msg: String ="Muchas gracias!"
@@ -427,7 +502,7 @@ try {
             val logName = "Admin"
             var amt = 100.0
             var gst = 5.0
-            var gamt = 100.00
+            var gamt = totalPrice
             var cmpname: String = "Factura Comercial\n\n" //Second Line
 
             var textData = StringBuilder()
@@ -459,7 +534,7 @@ try {
                     """.trimIndent()
             )
             str = ""
-            str = String.format("%-11s %9s, %10s","\n\nNombre","Cantidad", "Valor")
+            str = String.format("%-11s %9s, %10s","\n\nNombre","Cantidad","Valor")
             textData1.append(
                 """
                     $str
@@ -467,22 +542,17 @@ try {
             )
             textData1.append("--------------------------------\n")
             //var df = DecimalFormat("0.00")
-            var itmname: String
-            var rt : String?
-            var qty: String
-            var amount: String?
-            for (i in 0 until 2){
-                val price = 10
-//                itmname = "Item $i"
-                rt = price.toString()
-                qty = "Camiseta"
-                amount = "400"
-//                textData1.append(itmname+"\n")
-                str=""
-                str = String.format("%-10s %9s, %9s",qty,rt, amount)
-                textData1.append(str+"\n")
-            }
-            textData1.append("--------------------------------\n")
+    for (elem in listProductos) {
+        val cantidad = elem.cantidad
+        val rt = cantidad.toString() // Cantidad del producto
+        val qty = elem.name
+        val qtyNoSpaces = qty.replace("\\s+".toRegex(), " ")
+        val qtyChunks = qtyNoSpaces.chunked(10) { it }.joinToString("\n")
+        val amount = "${elem.precio_total}" //Valor del producto
+        str = String.format("%-11s %9s %10s", qtyChunks, rt, amount)
+        textData1.append(str)
+        textData1.append("\n--------------------------------\n")
+    }
             str = ""
 
 //            str = String.format("%-11s %9s, %10s",wnm,"Total:",amt)
@@ -506,7 +576,7 @@ try {
             IntentPrint(textData.toString(),textData1.toString(),textData2.toString(),textData3.toString(),textData4.toString())
     }catch (ex: java.lang.Exception){
         value += "$ex\nExcep IntentPrint \n"
-        println("Error 3")
+
         println(ex.message)
 
         Toast.makeText(this, value,Toast.LENGTH_SHORT).show()
@@ -527,7 +597,7 @@ try {
             InitPrinter()
             if(PrintHeader.size > 128){
                 value += "\nValue is more than 128 size\n"
-                println("Error 4")
+
                 Toast.makeText(this,value, Toast.LENGTH_SHORT).show()
             }else{
                 try {
@@ -562,7 +632,7 @@ try {
                         socket!!.close()
                     }
                 }catch (ex: java.lang.Exception){
-                    println("Error 1")
+
                     Toast.makeText(this,ex.message.toString(),Toast.LENGTH_SHORT).show()
                 }
             }
