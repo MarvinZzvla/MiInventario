@@ -7,10 +7,13 @@ import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.SimpleExpandableListAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +43,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -183,6 +187,21 @@ class HomePage : AppCompatActivity() {
         //Cargar los recycles views
         binding.recycleVentas.adapter?.notifyDataSetChanged()
         binding.recycleProductos.adapter?.notifyDataSetChanged()
+        lifecycleScope.launch(Dispatchers.Main) {
+            if(!checkSub()){
+                Intent(applicationContext,SubscriptionPage::class.java).apply { startActivity(this) }
+            }
+        }
+    }
+
+
+    suspend fun checkSub():Boolean{
+       val clientData =  database.dataClientDao.getInfo()[0]
+        val formato = SimpleDateFormat("dd/MM/yyyy")
+        val date = formato.parse(clientData.Date)
+        val expired = formato.parse(clientData.Expired)
+        return  date.before(expired)
+
     }
 
     private fun initScanner() {

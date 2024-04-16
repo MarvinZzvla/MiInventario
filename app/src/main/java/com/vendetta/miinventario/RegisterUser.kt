@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
+import com.vendetta.miinventario.data.database.entities.DataClientEntity
 import com.vendetta.miinventario.data.database.entities.UserEntity
 import com.vendetta.miinventario.databinding.ActivityRegisterUserBinding
 import io.github.jan.supabase.SupabaseClient
@@ -172,12 +173,16 @@ class RegisterUser : AppCompatActivity() {
         pais: String
     ) {
         lifecycleScope.launch(Dispatchers.IO) {
-           database.userDao.insertAll(
+           //Insert into Usuario Table
+            database.userDao.insertAll(
                 UserEntity(
                     id = 1, user = userName, pin = pin, negocio = negocio.capitalizeFirstLetter(),
                     telefono = phone, pais = pais,imageUriDatabase
                 )
             )
+            //Insert into DataClient Table
+            database.dataClientDao.insert(DataClientEntity())
+
             val user =  UserEntitySupabase(user = userName, pin = pin, negocio = negocio.capitalizeFirstLetter(),phone = phone, pais = pais)
             try {
                 supabase.from("Usuarios").insert(user)
@@ -186,6 +191,8 @@ class RegisterUser : AppCompatActivity() {
                 println(e.message)
             }
             val sharedPreferences = getSharedPreferences("login_users", Context.MODE_PRIVATE).edit()
+            sharedPreferences.putString("username",userName)
+            sharedPreferences.putString("phone",phone)
             sharedPreferences.putBoolean("isRegister", true)
             sharedPreferences.apply()
 
