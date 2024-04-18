@@ -119,9 +119,11 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mairyextralight"
             android:paddingBottom="10dp"
-            android:text="*Utiliza la palabra prueba para una prueba gratuita por 7 dias!"
+            android:text="*Utiliza la palabra 'PRUEBA' para una prueba gratuita por 5 dias!\n
+             Esta prueba contendra anuncios que seran eliminados cuando realices el pago para siempre"
             android:textAlignment="center"
             android:textColor="@color/white"
+            android:visibility="gone"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

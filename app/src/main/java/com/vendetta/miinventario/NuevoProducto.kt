@@ -5,12 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -31,6 +36,8 @@ class NuevoProducto : AppCompatActivity() {
 
     lateinit var binding : ActivityNuevoProductoBinding
     private lateinit var database: InventarioDatabase
+    private var mInterstitialAd: InterstitialAd? = null
+    private var TAG = "NuevoProducto"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNuevoProductoBinding.inflate(layoutInflater)
@@ -50,6 +57,7 @@ class NuevoProducto : AppCompatActivity() {
 
         //Boton de crear venta
         binding.btnSubmitProducto.setOnClickListener {
+            showAds()
             //Obtener los valores de los campos
             var name = binding.nuevoProductoNameProductoText.text.toString()
             var cantidad = binding.nuevoProductoCantidadText.text.toString()
@@ -80,6 +88,37 @@ class NuevoProducto : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        prepareAds()
+    }
+
+    private fun prepareAds() {
+        var adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(
+            this,"ca-app-pub-2467116940009132/5486356001", adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError.message)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                }
+            })
+
+    }
+
+    private fun showAds(){
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(this)
+        } else {
+            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+        }
     }
 
     /******************************************************

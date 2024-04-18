@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -45,11 +46,13 @@ class SubscriptionPage : AppCompatActivity() {
     lateinit var billingClient: BillingClient
     private lateinit var database: InventarioDatabase
     private lateinit var supabase: SupabaseClient
+    private var isTestUser = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         database = InventarioDatabase.getDatabase(this)
+        initTestConfig()
         initSupabase()
 
         //Declared a Listener after billing flow to handle the purchases
@@ -114,6 +117,12 @@ class SubscriptionPage : AppCompatActivity() {
             var codeText = binding.secretPassText.text.toString()
             //IF input text is not empty
             if (codeText.isNotEmpty()) {
+               if(!isTestUser && codeText.toLowerCase() == "prueba"){
+                   button.isEnabled = true
+                   initTestPeriod()
+                   return@setOnClickListener
+               }
+
                 //Call couroutine IO
                 lifecycleScope.launch(Dispatchers.IO) {
                     //Try the following
@@ -131,7 +140,7 @@ class SubscriptionPage : AppCompatActivity() {
                                 println("Creado con exito ")
                                 withContext(Dispatchers.Main){
                                     button.isEnabled = true
-                                    successPage()
+                                    updateDatabase(codeText)
                                 }
                             }
 
@@ -161,8 +170,20 @@ class SubscriptionPage : AppCompatActivity() {
         }
     }
 
-    private fun successPage() {
-        //HACER
+
+
+    private  fun initTestConfig() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            isTestUser = database.dataClientDao.getInfo()[0].isActive
+            withContext(Dispatchers.Main){
+                if(!isTestUser){
+                    binding.textView2.text = "Obten tu prueba gratuita"
+                    binding.header4.visibility = View.VISIBLE
+                }
+
+            }
+        }
+
     }
 
     private fun handleError(code: String?) {
@@ -306,6 +327,35 @@ class SubscriptionPage : AppCompatActivity() {
      *************************************************************/
     @Serializable
     data class BillingData(val Date: String, val User: String, val Phone: String, val Token: String)
+    /************************************************************************************************************
+     * Init Test Period
+     * Update local database
+     * Free with ads for 5 days!
+     ********************************************************************************************************/
+    private fun initTestPeriod() {
+        val formato = SimpleDateFormat("dd/MM/yyyy")
+        val today = Date()
+        val calendario =
+            Calendar.getInstance().apply { this.time = today; this.add(Calendar.DAY_OF_YEAR, 5) }
+        val dateActual = formato.format(today)
+        val dateExpired = formato.format(calendario.time)
+        val sharedPreferences = getSharedPreferences("login_users", Context.MODE_PRIVATE)
+        val username = sharedPreferences.getString("username", "Mi inventario") ?: ""
+        val phone = sharedPreferences.getString("phone", "88888888") ?: ""
+
+        //Update into Local Database
+        val dataClient = DataClientEntity(id = 1, dateActual, dateExpired, true)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val localStorage = getSharedPreferences("login_users", Context.MODE_PRIVATE).edit()
+            localStorage.putBoolean("isTesting",true)
+            localStorage.apply()
+            database.dataClientDao.update(dataClient)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(applicationContext, "La prueba serán 5 dias", Toast.LENGTH_SHORT).show()
+                Intent(applicationContext, HomePage::class.java).apply { startActivity(this) }
+            }
+        }
+    }
 
     /************************************************************************************************************
      * Update Database
@@ -322,6 +372,9 @@ class SubscriptionPage : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("login_users", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", "Mi inventario") ?: ""
         val phone = sharedPreferences.getString("phone", "88888888") ?: ""
+        val localStorage = getSharedPreferences("login_users", Context.MODE_PRIVATE).edit()
+        localStorage.putBoolean("isTesting",false)
+        localStorage.apply()
 
         //Update into Local Database
         val dataClient = DataClientEntity(id = 1, dateActual, dateExpired, true)

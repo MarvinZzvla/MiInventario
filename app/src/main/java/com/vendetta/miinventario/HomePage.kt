@@ -198,7 +198,8 @@ class HomePage : AppCompatActivity() {
     suspend fun checkSub():Boolean{
        val clientData =  database.dataClientDao.getInfo()[0]
         val formato = SimpleDateFormat("dd/MM/yyyy")
-        val date = formato.parse(clientData.Date)
+        val today = formato.format(Date())
+        val date = formato.parse(today)
         val expired = formato.parse(clientData.Expired)
         return  date.before(expired)
 

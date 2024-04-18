@@ -72,6 +72,8 @@ dependencies {
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     //HTTPS
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
+    //ADS
+    implementation 'com.google.android.gms:play-services-ads:23.0.0'
 
 
 
