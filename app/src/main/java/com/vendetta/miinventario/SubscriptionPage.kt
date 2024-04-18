@@ -29,6 +29,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import org.json.JSONObject
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -65,7 +71,11 @@ class SubscriptionPage : AppCompatActivity() {
 
                 } else {
                     // Handle any other error codes.
-                    Toast.makeText(this, "Ha ocurrido un error inesperado: " + billingResult.responseCode + " " + billingResult.debugMessage, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Ha ocurrido un error inesperado: " + billingResult.responseCode + " " + billingResult.debugMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     println(billingResult.debugMessage)
                 }
             }
@@ -80,11 +90,12 @@ class SubscriptionPage : AppCompatActivity() {
             //Start Connection
             billingClient.startConnection(object : BillingClientStateListener {
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
-                    if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         // The BillingClient is ready. You can query purchases here.
                         getProductos()
                     }
                 }
+
                 override fun onBillingServiceDisconnected() {
                     // Try to restart the connection on the next request to
                     // Google Play by calling the startConnection() method.
@@ -92,6 +103,111 @@ class SubscriptionPage : AppCompatActivity() {
                 }
             })
 
+        }
+
+
+        binding.submitCode.setOnClickListener {
+            //DISABLE BUTTON TO AVOID REPEAT ACTION
+            val button = binding.submitCode
+            button.isEnabled = false
+            //GET THE INPUT TEXT
+            var codeText = binding.secretPassText.text.toString()
+            //IF input text is not empty
+            if (codeText.isNotEmpty()) {
+                //Call couroutine IO
+                lifecycleScope.launch(Dispatchers.IO) {
+                    //Try the following
+                    try {
+                        var token = sendRequest(false)//sendresquest obtain a boolean parameters false = GET HTTPS true= POST HTTPS
+                        val jsonObject = JSONObject(token).getString("token") //Obtain response and get the apu value
+                        //If api key that user input is equal to api key from server
+                        if(jsonObject.toString() == codeText){
+                            //SEND A REQUEST TO CREATE A NEW API KEY
+                            var status = sendRequest(true)
+                            //GET THE STATUS CODE
+                            val jsonObject = JSONObject(status).getString("code")
+                            //IF the status CODE is EQUAL 201 = SUCCESS
+                            if(jsonObject.toString() == "201"){
+                                println("Creado con exito ")
+                                withContext(Dispatchers.Main){
+                                    button.isEnabled = true
+                                    successPage()
+                                }
+                            }
+
+                        }
+                        else{
+                           withContext(Dispatchers.Main){
+                               button.isEnabled = true
+                               Toast.makeText(applicationContext,"Codigo incorrecto, verifique e intente nuevamente",Toast.LENGTH_SHORT).show()
+                           }
+                        }
+                    } catch (err: Exception) {
+                        withContext(Dispatchers.Main)
+                        {
+                            button.isEnabled = true
+                            //PASS ERROR CODE and HANDLE IT
+                            handleError(err.message)
+                        }
+
+                    }
+
+                }
+            }
+            else{
+                button.isEnabled = true
+                Toast.makeText(this,"Por favor ingrese un codigo antes de enviar",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun successPage() {
+        //HACER
+    }
+
+    private fun handleError(code: String?) {
+
+        when (code) {
+            "429" -> Toast.makeText(applicationContext, "Muchos intentos, vuelva en 10 minutos", Toast.LENGTH_SHORT).show()
+
+            else -> Toast.makeText(applicationContext, "Error desconocido: $code", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun sendRequest(put: Boolean):String? {
+        val url = BuildConfig.URL_INVENTARIO
+        val apiKey = BuildConfig.API_INVENTARIO_KEY
+        val client = OkHttpClient()
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val body = RequestBody.create(JSON, "")
+
+        if (put) {
+            //SI ES PETICION PUT
+            val request = Request.Builder()
+                .url(url)
+                .put(body)
+                .addHeader(BuildConfig.SECRET_HEADER, apiKey)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("${response.code}")
+                }
+                return response.body?.string()
+            }
+        } else {
+            //SI ES GET
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("X-SECRET-KEY", apiKey)
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("${response.code}")
+                }
+                return response.body?.string()
+            }
         }
 
     }
