@@ -23,6 +23,7 @@ out/
 # Gradle files
 .gradle
 .gradle.properties
+gradle.properties
 .gradle/
 build/
 
