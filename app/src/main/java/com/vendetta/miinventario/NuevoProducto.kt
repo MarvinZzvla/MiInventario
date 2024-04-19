@@ -1,5 +1,6 @@
 package com.vendetta.miinventario
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -29,6 +30,7 @@ import com.vendetta.miinventario.data.database.entities.ProductosEntity
 import com.vendetta.miinventario.databinding.ActivityNuevaVentaBinding
 import com.vendetta.miinventario.databinding.ActivityNuevoProductoBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -73,9 +75,11 @@ class NuevoProducto : AppCompatActivity() {
             if(verifyFields()) {
                 //Guardar producto
                 if(isEdit){
+                    initAds()
                     updateProducto(name, cantidad, precio, precio_venta, barcode,id)
                 }
                 else{
+                    initAds()
                     saveProducto(name, cantidad, precio, precio_venta, barcode)
                 }
 
@@ -87,18 +91,23 @@ class NuevoProducto : AppCompatActivity() {
 
         }
 
-
     }
 
-    override fun onStart() {
-        super.onStart()
-        prepareAds()
-    }
+    private fun initAds() {
+        val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE)
+        val isTesting = localStorage.getBoolean("isAdsEnable",false)
+        if(isTesting){
+            lifecycleScope.launch(Dispatchers.Main) {
+                delay(5000L)
+                prepareAds() }
+        }
 
+    }
     private fun prepareAds() {
         var adRequest = AdRequest.Builder().build()
+        //ca-app-pub-2467116940009132/5486356001
         InterstitialAd.load(
-            this,"ca-app-pub-2467116940009132/5486356001", adRequest,
+            this,BuildConfig.AD_ID, adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Log.d(TAG, adError.message)
@@ -108,11 +117,11 @@ class NuevoProducto : AppCompatActivity() {
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     Log.d(TAG, "Ad was loaded.")
                     mInterstitialAd = interstitialAd
+                    showAds()
                 }
             })
 
     }
-
     private fun showAds(){
         if (mInterstitialAd != null) {
             mInterstitialAd?.show(this)

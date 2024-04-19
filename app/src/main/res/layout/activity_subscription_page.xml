@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/mairyextrabold"
-        android:text="Tu subscripción ha vencido"
+        android:text="Comprar una subscripción"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="42sp"

@@ -1,6 +1,7 @@
 package com.vendetta.miinventario
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -11,6 +12,8 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.View
 import android.widget.SimpleExpandableListAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -22,6 +25,10 @@ import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -39,13 +46,16 @@ import com.vendetta.miinventario.data.database.entities.FinanzasEntity
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import com.vendetta.miinventario.databinding.ActivityHomePageBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class HomePage : AppCompatActivity() {
     lateinit var binding : ActivityHomePageBinding
@@ -53,6 +63,8 @@ class HomePage : AppCompatActivity() {
     private lateinit var miAdapterVentas: VentasAdapter
     private lateinit var miAdapterProductos: ProductosAdapter
     private lateinit var database : InventarioDatabase
+    private var mInterstitialAd: InterstitialAd? = null
+    private var TAG = "HomePage"
     val DAY_IN_MILISECONDS = 86400000
     var date = Date().toString()
 
@@ -71,6 +83,7 @@ class HomePage : AppCompatActivity() {
         initRecycleViewProductos()
         initTextWatchers()
         initHomePage()
+        initAds()
         initFinanzas(date,date)
 
         //Cuando sea seleccionado el boton de salir
@@ -99,11 +112,71 @@ class HomePage : AppCompatActivity() {
             Intent(this,NuevoProducto::class.java).apply { startActivity(this) }
         }
 
+        binding.eliminateAds.setOnClickListener {
+            Intent(this,SubscriptionPage::class.java).apply { startActivity(this) }
+        }
+        binding.eliminateAdsText.setOnClickListener {
+            startActivity(Intent(this,SubscriptionPage::class.java))
+        }
+
         binding.btnBarCode.isClickable = true
         binding.btnBarCode.setOnClickListener {
             initScanner()
         }
 
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onStart() {
+        super.onStart()
+        //Cargar los recycles views
+        binding.recycleVentas.adapter?.notifyDataSetChanged()
+        binding.recycleProductos.adapter?.notifyDataSetChanged()
+        lifecycleScope.launch(Dispatchers.Main) {
+            if(!checkSub()){
+                Intent(applicationContext,SubscriptionPage::class.java).apply { startActivity(this) }
+            }
+        }
+    }
+
+    private fun initAds() {
+        val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE)
+        val isTesting = localStorage.getBoolean("isAdsEnable",false)
+        if(isTesting){
+            binding.eliminateAds.visibility = View.VISIBLE
+            binding.eliminateAdsText.visibility = View.VISIBLE
+
+            lifecycleScope.launch(Dispatchers.Main) {
+                delay(5000L)
+                prepareAds()
+            }
+        }
+
+    }
+    private fun prepareAds() {
+        var adRequest = AdRequest.Builder().build()
+        //ca-app-pub-2467116940009132/5486356001
+        InterstitialAd.load(
+            this,BuildConfig.AD_ID, adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError.message)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    showAds()
+                }
+            })
+
+    }
+    private fun showAds(){
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(this)
+        } else {
+            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+        }
     }
 
     private fun initHomePage() {
@@ -181,18 +254,7 @@ class HomePage : AppCompatActivity() {
         })
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onStart() {
-        super.onStart()
-        //Cargar los recycles views
-        binding.recycleVentas.adapter?.notifyDataSetChanged()
-        binding.recycleProductos.adapter?.notifyDataSetChanged()
-        lifecycleScope.launch(Dispatchers.Main) {
-            if(!checkSub()){
-                Intent(applicationContext,SubscriptionPage::class.java).apply { startActivity(this) }
-            }
-        }
-    }
+
 
 
     suspend fun checkSub():Boolean{
@@ -201,9 +263,30 @@ class HomePage : AppCompatActivity() {
         val today = formato.format(Date())
         val date = formato.parse(today)
         val expired = formato.parse(clientData.Expired)
+        val days_diff = getDiffDates(date, expired)
+
+        if(days_diff <= 5){
+            binding.infoDaysLeft.text = "Tu subscripción abacará en $days_diff dias!"
+            binding.infoDaysLeft.visibility = View.VISIBLE
+        }
+
+
         return  date.before(expired)
 
     }
+
+    private fun getDiffDates(date: Date, expired: Date): Int {
+        val cal1 = Calendar.getInstance()
+        val cal2 = Calendar.getInstance()
+
+        cal1.time = date!!
+        cal2.time = expired!!
+
+        val diff = cal2.timeInMillis - cal1.timeInMillis
+        val diasEntre = TimeUnit.MILLISECONDS.toDays(diff)
+        return diasEntre.toInt()
+    }
+
 
     private fun initScanner() {
         try {

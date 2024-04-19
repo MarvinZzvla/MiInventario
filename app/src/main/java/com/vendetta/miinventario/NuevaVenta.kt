@@ -1,31 +1,37 @@
 package com.vendetta.miinventario
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.vendetta.miinventario.adapter.DropdownAdapter
 import com.vendetta.miinventario.adapter.NuevaVentaAdapter
-import com.vendetta.miinventario.data.Productos
 import com.vendetta.miinventario.data.VentaDropdown
 import com.vendetta.miinventario.data.VentaDropdownProvider
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.InventarioDatabase.Companion.getDatabase
 import com.vendetta.miinventario.data.database.entities.FinanzasEntity
-import com.vendetta.miinventario.data.database.entities.ProductosEntity
 import com.vendetta.miinventario.data.database.entities.VentasEntity
 import com.vendetta.miinventario.data.structures.NuevaVentaDatos
 import com.vendetta.miinventario.databinding.ActivityNuevaVentaBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,6 +44,8 @@ class NuevaVenta : AppCompatActivity() {
     lateinit var database: InventarioDatabase //GET Database
     lateinit var listOfProductos: ArrayList<VentaDropdown> //GET list of products
     lateinit var builder: AlertDialog.Builder
+    private var mInterstitialAd: InterstitialAd? = null
+    private var TAG = "NuevaVenta"
     var totalPrecio = 0.0f
     var totalGanancia = 0.0f
     var arrayVenta = arrayListOf<NuevaVentaDatos>()
@@ -70,6 +78,44 @@ class NuevaVenta : AppCompatActivity() {
         }
         binding.btnAddtoRecycle.setOnClickListener {
             addToRecycle()
+        }
+    }
+
+
+    private fun initAds() {
+        val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE)
+        val isTesting = localStorage.getBoolean("isAdsEnable",false)
+        if(isTesting){
+            lifecycleScope.launch(Dispatchers.Main) {
+                delay(5000L)
+                prepareAds() }
+        }
+
+    }
+    private fun prepareAds() {
+        var adRequest = AdRequest.Builder().build()
+        //ca-app-pub-2467116940009132/5486356001
+        InterstitialAd.load(
+            this,BuildConfig.AD_ID, adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError.message)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    showAds()
+                }
+            })
+
+    }
+    private fun showAds(){
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(this)
+        } else {
+            Log.d("TAG", "The interstitial ad wasn't ready yet.")
         }
     }
 
@@ -302,6 +348,7 @@ class NuevaVenta : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Porfavor ingresar al menos un articulo",Toast.LENGTH_SHORT).show()
                 }
                 else{
+                    initAds()
                     saveVentaDatabase()
                 }
 

@@ -34,6 +34,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -110,66 +111,65 @@ class SubscriptionPage : AppCompatActivity() {
 
 
         binding.submitCode.setOnClickListener {
+            val editTextToken = binding.secretPassText.text.toString()
             //DISABLE BUTTON TO AVOID REPEAT ACTION
-            val button = binding.submitCode
-            button.isEnabled = false
-            //GET THE INPUT TEXT
-            var codeText = binding.secretPassText.text.toString()
-            //IF input text is not empty
-            if (codeText.isNotEmpty()) {
-               if(!isTestUser && codeText.toLowerCase() == "prueba"){
-                   button.isEnabled = true
-                   initTestPeriod()
-                   return@setOnClickListener
-               }
+            binding.submitCode.isEnabled = false
 
-                //Call couroutine IO
-                lifecycleScope.launch(Dispatchers.IO) {
-                    //Try the following
-                    try {
-                        var token = sendRequest(false)//sendresquest obtain a boolean parameters false = GET HTTPS true= POST HTTPS
-                        val jsonObject = JSONObject(token).getString("token") //Obtain response and get the apu value
-                        //If api key that user input is equal to api key from server
-                        if(jsonObject.toString() == codeText){
-                            //SEND A REQUEST TO CREATE A NEW API KEY
-                            var status = sendRequest(true)
-                            //GET THE STATUS CODE
-                            val jsonObject = JSONObject(status).getString("code")
-                            //IF the status CODE is EQUAL 201 = SUCCESS
-                            if(jsonObject.toString() == "201"){
-                                println("Creado con exito ")
-                                withContext(Dispatchers.Main){
-                                    button.isEnabled = true
-                                    updateDatabase(codeText)
-                                }
-                            }
-
-                        }
-                        else{
-                           withContext(Dispatchers.Main){
-                               button.isEnabled = true
-                               Toast.makeText(applicationContext,"Codigo incorrecto, verifique e intente nuevamente",Toast.LENGTH_SHORT).show()
-                           }
-                        }
-                    } catch (err: Exception) {
-                        withContext(Dispatchers.Main)
-                        {
-                            button.isEnabled = true
-                            //PASS ERROR CODE and HANDLE IT
-                            handleError(err.message)
-                        }
-
-                    }
-
+            if(editTextToken.isNotEmpty()){
+                if(editTextToken.lowercase() == "prueba" && !isTestUser){
+                    initTestPeriod()
                 }
+                else{
+                    lifecycleScope.launch(Dispatchers.IO) {sendHTTPS()}
+                }
+
             }
             else{
-                button.isEnabled = true
-                Toast.makeText(this,"Por favor ingrese un codigo antes de enviar",Toast.LENGTH_SHORT).show()
+                binding.submitCode.isEnabled = true
+                Toast.makeText(applicationContext, "El campo esta vacio", Toast.LENGTH_SHORT).show()
             }
+
+
+
         }
     }
 
+    private suspend fun sendHTTPS() {
+        val tokenToSend = binding.secretPassText.text.toString()
+
+        val client = OkHttpClient()
+        val url = BuildConfig.URL_INVENTARIO
+        val jsonMediaType = "application/json; charset=utf-8".toMediaType()
+        val json = """{"token": "$tokenToSend"}"""
+        val body = json.toRequestBody(jsonMediaType)
+
+        val apiKey = BuildConfig.API_INVENTARIO_KEY
+
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("X-SECRET-KEY", apiKey)
+            .post(body)
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (response.code.toString() == "200") {
+                updateDatabase(tokenToSend)
+            }
+            //Enable btn
+            lifecycleScope.launch(Dispatchers.Main) {
+                binding.submitCode.isEnabled = true
+                handleError(response.code.toString())
+            }
+        }catch (err: Exception){
+            withContext(Dispatchers.Main){
+                binding.submitCode.isEnabled = true
+                Toast.makeText(applicationContext, "Tiempo agotado, intente nuevamente",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+    }
 
 
     private  fun initTestConfig() {
@@ -186,52 +186,18 @@ class SubscriptionPage : AppCompatActivity() {
 
     }
 
-    private fun handleError(code: String?) {
+    private fun handleError(code: String) {
 
         when (code) {
-            "429" -> Toast.makeText(applicationContext, "Muchos intentos, vuelva en 10 minutos", Toast.LENGTH_SHORT).show()
+            "200" -> Toast.makeText(applicationContext, "La compra fue exitosa", Toast.LENGTH_SHORT).show()
+            "400" -> Toast.makeText(applicationContext, "Token invalido, intente nuevamente", Toast.LENGTH_SHORT).show()
+            "401" -> Toast.makeText(applicationContext, "Este token ya fue usado", Toast.LENGTH_SHORT).show()
+
 
             else -> Toast.makeText(applicationContext, "Error desconocido: $code", Toast.LENGTH_SHORT).show()
         }
     }
 
-
-    private fun sendRequest(put: Boolean):String? {
-        val url = BuildConfig.URL_INVENTARIO
-        val apiKey = BuildConfig.API_INVENTARIO_KEY
-        val client = OkHttpClient()
-        val JSON = "application/json; charset=utf-8".toMediaType()
-        val body = RequestBody.create(JSON, "")
-
-        if (put) {
-            //SI ES PETICION PUT
-            val request = Request.Builder()
-                .url(url)
-                .put(body)
-                .addHeader(BuildConfig.SECRET_HEADER, apiKey)
-                .build()
-
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw IOException("${response.code}")
-                }
-                return response.body?.string()
-            }
-        } else {
-            //SI ES GET
-            val request = Request.Builder()
-                .url(url)
-                .addHeader("X-SECRET-KEY", apiKey)
-                .build()
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw IOException("${response.code}")
-                }
-                return response.body?.string()
-            }
-        }
-
-    }
 
     /*********************************************************************
      * Get productos
@@ -346,11 +312,12 @@ class SubscriptionPage : AppCompatActivity() {
         //Update into Local Database
         val dataClient = DataClientEntity(id = 1, dateActual, dateExpired, true)
         lifecycleScope.launch(Dispatchers.IO) {
-            val localStorage = getSharedPreferences("login_users", Context.MODE_PRIVATE).edit()
-            localStorage.putBoolean("isTesting",true)
+            val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE).edit()
+            localStorage.putBoolean("isAdsEnable",true)
             localStorage.apply()
             database.dataClientDao.update(dataClient)
             withContext(Dispatchers.Main) {
+                binding.submitCode.isEnabled = true
                 Toast.makeText(applicationContext, "La prueba serán 5 dias", Toast.LENGTH_SHORT).show()
                 Intent(applicationContext, HomePage::class.java).apply { startActivity(this) }
             }
@@ -372,9 +339,8 @@ class SubscriptionPage : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("login_users", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", "Mi inventario") ?: ""
         val phone = sharedPreferences.getString("phone", "88888888") ?: ""
-        val localStorage = getSharedPreferences("login_users", Context.MODE_PRIVATE).edit()
-        localStorage.putBoolean("isTesting",false)
-        localStorage.apply()
+
+        val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE).edit().clear().apply() //Disable Ads
 
         //Update into Local Database
         val dataClient = DataClientEntity(id = 1, dateActual, dateExpired, true)
