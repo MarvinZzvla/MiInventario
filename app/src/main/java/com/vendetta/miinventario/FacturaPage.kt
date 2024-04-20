@@ -77,6 +77,7 @@ class FacturaPage : AppCompatActivity() {
     private var phone = ""
     private var totalPrice = ""
     private var idFactura = 0
+    private var isView = false
 
     @Volatile
     var stopWorker = false
@@ -94,7 +95,7 @@ class FacturaPage : AppCompatActivity() {
 
         database = getDatabase(this)
         //Get List Of Productos from Nueva Venta Activity
-        listProductos = intent.getStringArrayListExtra("arrayVenta") as ArrayList<NuevaVentaDatos>
+        listProductos = intent.getSerializableExtra("arrayVenta") as ArrayList<NuevaVentaDatos>
         loadInfo()
 
         initAdapter()
@@ -159,7 +160,7 @@ class FacturaPage : AppCompatActivity() {
     }
 
     private fun initShare() {
-       val constraintLayout = binding.constraintLayout
+        val constraintLayout = binding.constraintLayout
         val bitmap = captureView(constraintLayout)
         val file = saveBitmap(bitmap, this)
         if (file != null) {
@@ -175,20 +176,15 @@ class FacturaPage : AppCompatActivity() {
         view.draw(canvas)
         return bitmap
     }
+
     fun saveBitmap(bitmap: Bitmap, context: Context): File? {
         binding.btnDeleteFactura.visibility = View.VISIBLE
         binding.btnShare.visibility = View.VISIBLE
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-            val file = File(context.getExternalFilesDir(null), "screenshot.png")
-            val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.close()
-            return file
-        } else {
-            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSIONS)
-            return null
-        }
+        val file = File(context.getExternalFilesDir(null), "screenshot.png")
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.close()
+        return file
     }
 
     fun shareFile(file: File, context: Context) {
@@ -210,6 +206,7 @@ class FacturaPage : AppCompatActivity() {
          phone = sharedPreferences.getString("phone","").toString()
          totalPrice = intent.getFloatExtra("totalPrice",0.0f).toString()
          idFactura = intent.getIntExtra("factura_number",0)
+        isView = intent.getBooleanExtra("isView",false)
 
         val producto = listProductos[0]
         binding.facturaNumber.text = "Factura #: $idFactura"
@@ -258,7 +255,13 @@ class FacturaPage : AppCompatActivity() {
     private fun initAdapter() {
         var facturaList = arrayListOf<Factura>()
         for(producto in listProductos){
-            facturaList += Factura(producto.name,producto.cantidad,producto.precio_total)
+            if(isView){
+                facturaList += Factura(producto.name,producto.cantidad,(producto.precio_total/producto.cantidad))
+            }
+            else{
+                facturaList += Factura(producto.name,producto.cantidad,producto.precio_total)
+            }
+
         }
         val recyclerView = binding.recycleFactura
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -277,6 +280,7 @@ class FacturaPage : AppCompatActivity() {
                     initShare()
                 } else {
                     // El permiso WRITE_EXTERNAL_STORAGE fue denegado
+                    Toast.makeText(this,"Permiso denegado",Toast.LENGTH_SHORT).show()
 
                 }
             }
@@ -548,7 +552,7 @@ try {
         val qty = elem.name
         val qtyNoSpaces = qty.replace("\\s+".toRegex(), " ")
         val qtyChunks = qtyNoSpaces.chunked(10) { it }.joinToString("\n")
-        val amount = "${elem.precio_total}" //Valor del producto
+        val amount = if(isView){"${elem.precio_total / elem.cantidad}"}else{"${elem.precio_total}"} //Valor del producto
         str = String.format("%-11s %9s %10s", qtyChunks, rt, amount)
         textData1.append(str)
         textData1.append("\n--------------------------------\n")

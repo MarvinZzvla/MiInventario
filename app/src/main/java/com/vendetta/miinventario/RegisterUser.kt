@@ -91,22 +91,23 @@ class RegisterUser : AppCompatActivity() {
         }
 
         binding.logoNegocio.setOnClickListener {
-            val permission =if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Manifest.permission.MANAGE_EXTERNAL_STORAGE
+            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
             } else {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             }
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE_IMAGES)
-            }
-            else{
+            } else {
                 openGallery()
             }
         }
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "image/*"
         startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
     }
 
@@ -117,8 +118,10 @@ class RegisterUser : AppCompatActivity() {
                 // Permiso otorgado, puedes acceder a imágenes
                 openGallery()
             } else {
+                //openGallery()
                 // Permiso denegado, maneja la situación
                 Toast.makeText(this,"No es posible abrir galeria",Toast.LENGTH_SHORT).show()
+
             }
         }
     }
@@ -126,8 +129,13 @@ class RegisterUser : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
-             var imageUri = data?.data
+            var imageUri = data?.data
             if (imageUri != null) {
+                // Toma persistencia del URI
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                contentResolver.takePersistableUriPermission(imageUri, takeFlags)
+
                 imageUriDatabase = imageUri.toString()
                 val mimeType = contentResolver.getType(imageUri)
                 if (mimeType != null && mimeType.startsWith("image/")) {

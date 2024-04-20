@@ -293,6 +293,7 @@ class NuevaVenta : AppCompatActivity() {
         //Update recycle
         binding.recycleViewNuevaVenta.adapter = NuevaVentaAdapter(arrayVenta)
         //Start Receipt Screen
+        println("Esta es la venta " + arrayVentaTmp)
         Intent(this, FacturaPage::class.java).apply {
             putExtra("arrayVenta", arrayVentaTmp)
             putExtra("factura_number", idFactura + 1)

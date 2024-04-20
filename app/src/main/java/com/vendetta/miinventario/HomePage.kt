@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -185,15 +186,21 @@ class HomePage : AppCompatActivity() {
 
         val uriString = sharedPreferences.getString("photo","")
         if(uriString != ""){
-        val uri = Uri.parse(uriString)
-        val circularMask = ShapeDrawable(OvalShape())
-        circularMask.paint.color = Color.BLACK
-        circularMask.setBounds(0, 0, 64, 64)
-        // El archivo seleccionado es una imagen
-        binding.circularImageView.setImageURI(uri)
-        binding.circularImageView.background = circularMask
-        binding.circularImageView.clipToOutline = true
+            val uri = Uri.parse(uriString)
+            val circularMask = ShapeDrawable(OvalShape())
+            circularMask.paint.color = Color.BLACK
+            circularMask.setBounds(0, 0, 64, 64)
+            // El archivo seleccionado es una imagen
+            try {
+                val inputStream = contentResolver.openInputStream(uri)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                binding.circularImageView.setImageBitmap(bitmap)
+                binding.circularImageView.background = circularMask
+                binding.circularImageView.clipToOutline = true
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
+        }
     }
 
     private fun initFinanzas(startDate: String, endDate: String) {
@@ -339,6 +346,7 @@ class HomePage : AppCompatActivity() {
     fun onItemClickedVentas(ventas: Ventas) {
         lifecycleScope.launch(Dispatchers.IO) {
             val ventaList = VentasProvider().getVentabyId(applicationContext,ventas.factura) as ArrayList<NuevaVentaDatos>
+            println("Esta es la venta " + ventaList)
 
             withContext(Dispatchers.Main){
                 Intent(applicationContext,FacturaPage::class.java).apply {
