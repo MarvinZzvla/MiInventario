@@ -179,6 +179,7 @@ class SubscriptionPage : AppCompatActivity() {
                 if(!isTestUser){
                     binding.textView2.text = "Obten tu prueba gratuita"
                     binding.header4.visibility = View.VISIBLE
+                    initTestPeriod() //Activa el modo prueba automaticamente
                 }
 
             }

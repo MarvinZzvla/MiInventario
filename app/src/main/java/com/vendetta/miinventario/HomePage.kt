@@ -64,8 +64,8 @@ class HomePage : AppCompatActivity() {
     private lateinit var miAdapterVentas: VentasAdapter
     private lateinit var miAdapterProductos: ProductosAdapter
     private lateinit var database : InventarioDatabase
-    private var mInterstitialAd: InterstitialAd? = null
-    private var TAG = "HomePage"
+    private var isTesting = true
+
     val DAY_IN_MILISECONDS = 86400000
     var date = Date().toString()
 
@@ -84,7 +84,6 @@ class HomePage : AppCompatActivity() {
         initRecycleViewProductos()
         initTextWatchers()
         initHomePage()
-        initAds()
         initFinanzas(date,date)
 
         //Cuando sea seleccionado el boton de salir
@@ -137,46 +136,17 @@ class HomePage : AppCompatActivity() {
                 Intent(applicationContext,SubscriptionPage::class.java).apply { startActivity(this) }
             }
         }
-    }
-
-    private fun initAds() {
+        //Obtener si mostrar anuncios o no
         val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE)
-        val isTesting = localStorage.getBoolean("isAdsEnable",false)
+        isTesting = localStorage.getBoolean("isAdsEnable",true)
         if(isTesting){
             binding.eliminateAds.visibility = View.VISIBLE
             binding.eliminateAdsText.visibility = View.VISIBLE
 
-            lifecycleScope.launch(Dispatchers.Main) {
-                delay(5000L)
-                prepareAds()
-            }
         }
-
-    }
-    private fun prepareAds() {
-        var adRequest = AdRequest.Builder().build()
-        //ca-app-pub-2467116940009132/5486356001
-        InterstitialAd.load(
-            this,BuildConfig.AD_ID, adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(TAG, adError.message)
-                    mInterstitialAd = null
-                }
-
-                override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    Log.d(TAG, "Ad was loaded.")
-                    mInterstitialAd = interstitialAd
-                    showAds()
-                }
-            })
-
-    }
-    private fun showAds(){
-        if (mInterstitialAd != null) {
-            mInterstitialAd?.show(this)
-        } else {
-            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+        else{
+            binding.eliminateAds.visibility = View.GONE
+            binding.eliminateAdsText.visibility = View.GONE
         }
     }
 
