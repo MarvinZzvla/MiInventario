@@ -139,6 +139,7 @@ class HomePage : AppCompatActivity() {
         //Obtener si mostrar anuncios o no
         val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE)
         isTesting = localStorage.getBoolean("isAdsEnable",true)
+        isTesting = !localStorage.all.isEmpty()
         if(isTesting){
             binding.eliminateAds.visibility = View.VISIBLE
             binding.eliminateAdsText.visibility = View.VISIBLE
@@ -235,20 +236,26 @@ class HomePage : AppCompatActivity() {
 
 
     suspend fun checkSub():Boolean{
-       val clientData =  database.dataClientDao.getInfo()[0]
-        val formato = SimpleDateFormat("dd/MM/yyyy")
-        val today = formato.format(Date())
-        val date = formato.parse(today)
-        val expired = formato.parse(clientData.Expired)
-        val days_diff = getDiffDates(date, expired)
+        try {
+            val clientData =  database.dataClientDao.getInfo()[0]
+            val formato = SimpleDateFormat("dd/MM/yyyy")
+            val today = formato.format(Date())
+            val date = formato.parse(today)
+            val expired = formato.parse(clientData.Expired)
+            val days_diff = getDiffDates(date, expired)
 
-        if(days_diff <= 5){
-            binding.infoDaysLeft.text = "Tu subscripción abacará en $days_diff dias!"
-            binding.infoDaysLeft.visibility = View.VISIBLE
+            if(days_diff <= 5){
+                binding.infoDaysLeft.text = "Tu subscripción abacará en $days_diff dias!"
+                binding.infoDaysLeft.visibility = View.VISIBLE
+            }
+
+            return  date.before(expired)
+        }
+        catch (e:Error){
+            println(e.message)
+            return false
         }
 
-
-        return  date.before(expired)
 
     }
 

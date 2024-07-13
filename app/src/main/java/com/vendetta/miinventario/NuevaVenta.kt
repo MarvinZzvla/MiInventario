@@ -87,7 +87,7 @@ class NuevaVenta : AppCompatActivity() {
         val isTesting = localStorage.getBoolean("isAdsEnable",false)
         if(isTesting){
             lifecycleScope.launch(Dispatchers.Main) {
-                delay(5000L)
+                delay(1000L)
                 prepareAds() }
         }
 
@@ -310,8 +310,7 @@ class NuevaVenta : AppCompatActivity() {
         val name = binding.nuevaVentaNameProductoText.text
         val cantidad = binding.nuevaVentaCantidadText.text
         val precio = binding.nuevaVentaPrecioText.text
-
-        return !(name.isNullOrBlank() && cantidad.isNullOrEmpty() && precio.isNullOrEmpty())
+        return !(name.isNullOrEmpty() || cantidad.isNullOrEmpty() || precio.isNullOrEmpty())
     }
 
     /*******************************************************************
