@@ -119,6 +119,10 @@ class HomePage : AppCompatActivity() {
             startActivity(Intent(this,SubscriptionPage::class.java))
         }
 
+        binding.reportBtn.setOnClickListener {
+            startActivity(Intent(this,FeedbackPage::class.java))
+        }
+
         binding.btnBarCode.isClickable = true
         binding.btnBarCode.setOnClickListener {
             initScanner()
@@ -131,11 +135,7 @@ class HomePage : AppCompatActivity() {
         //Cargar los recycles views
         binding.recycleVentas.adapter?.notifyDataSetChanged()
         binding.recycleProductos.adapter?.notifyDataSetChanged()
-        lifecycleScope.launch(Dispatchers.Main) {
-            if(!checkSub()){
-                Intent(applicationContext,SubscriptionPage::class.java).apply { startActivity(this) }
-            }
-        }
+
         //Obtener si mostrar anuncios o no
         val localStorage = getSharedPreferences("ads_data", Context.MODE_PRIVATE)
         isTesting = localStorage.getBoolean("isAdsEnable",true)
@@ -383,12 +383,6 @@ class HomePage : AppCompatActivity() {
             for(element in listaFinanzas) {
                 entries.add(com.github.mikephil.charting.data.Entry(xPosition, element.Total))
                 xPosition++
-//                entries.add(com.github.mikephil.charting.data.Entry(2f, 180.00f))
-//                entries.add(com.github.mikephil.charting.data.Entry(3f, 240.00f))
-//                entries.add(com.github.mikephil.charting.data.Entry(4f, 450.00f))
-//                entries.add(com.github.mikephil.charting.data.Entry(5f, 200.00f))
-//                entries.add(com.github.mikephil.charting.data.Entry(6f, 350.00f))
-//                entries.add(com.github.mikephil.charting.data.Entry(7f, 450.00f))
             }
 
             withContext(Dispatchers.Main){

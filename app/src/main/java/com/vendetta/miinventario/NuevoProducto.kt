@@ -75,11 +75,11 @@ class NuevoProducto : AppCompatActivity() {
             if(verifyFields()) {
                 //Guardar producto
                 if(isEdit){
-                    initAds()
+                   // initAds() //Disable ADS
                     updateProducto(name, cantidad, precio, precio_venta, barcode,id)
                 }
                 else{
-                    initAds()
+                    //initAds()  //Disable ADS
                     saveProducto(name, cantidad, precio, precio_venta, barcode)
                 }
 

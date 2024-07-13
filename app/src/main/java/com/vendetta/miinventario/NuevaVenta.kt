@@ -348,7 +348,7 @@ class NuevaVenta : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Porfavor ingresar al menos un articulo",Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    initAds()
+                   // initAds () //Disable ADS
                     saveVentaDatabase()
                 }
 
