@@ -19,7 +19,11 @@ import com.vendetta.miinventario.data.database.entities.UserEntity
 import com.vendetta.miinventario.data.database.entities.VentasEntity
 import java.time.chrono.HijrahChronology.INSTANCE
 
-@Database(entities = [UserEntity::class,VentasEntity::class,ProductosEntity::class,FinanzasEntity::class,DataClientEntity::class], version = 1)
+@Database(
+    entities = [UserEntity::class, VentasEntity::class, ProductosEntity::class, FinanzasEntity::class, DataClientEntity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class InventarioDatabase: RoomDatabase() {
 abstract val userDao: UserDao
 abstract val ventasDao: VentasDao

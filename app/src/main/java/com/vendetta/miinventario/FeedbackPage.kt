@@ -30,6 +30,7 @@ class FeedbackPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFeedbackPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
         //Initialize supabase
         initSupabase()
         binding.btnSubmitFeedback.setOnClickListener {

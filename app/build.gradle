@@ -1,25 +1,25 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
-    id 'kotlin-kapt'
-    id "org.jetbrains.kotlin.plugin.serialization" version "1.9.23"
+    id 'com.google.devtools.ksp'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 android {
-    compileSdk 34
+    namespace 'com.vendetta.miinventario'
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.vendetta.miinventario"
         minSdk 24
-        targetSdk 33
-        versionCode 35
-        versionName "5.0.5"
+        targetSdk 36
+        versionCode 36
+        versionName "5.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         buildConfig = true
     }
@@ -30,52 +30,52 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    buildTypes.each {
-        it.buildConfigField 'String', 'SUPABASE_API_KEY', SUPABASE_API_KEY
-        it.buildConfigField 'String', 'API_INVENTARIO_KEY', API_INVENTARIO_KEY
-        it.buildConfigField 'String', 'URL_INVENTARIO', URL_INVENTARIO
-        it.buildConfigField 'String', 'SECRET_HEADER', SECRET_HEADER
-        it.buildConfigField 'String', 'AD_ID', AD_ID
+    buildTypes.configureEach {
+        it.buildConfigField 'String', 'SUPABASE_API_KEY', "\"${SUPABASE_API_KEY}\""
+        it.buildConfigField 'String', 'API_INVENTARIO_KEY', "\"${API_INVENTARIO_KEY}\""
+        it.buildConfigField 'String', 'URL_INVENTARIO', "\"${URL_INVENTARIO}\""
+        it.buildConfigField 'String', 'SECRET_HEADER', "\"${SECRET_HEADER}\""
+        it.buildConfigField 'String', 'AD_ID', "\"${AD_ID}\""
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.activity:activity-ktx:1.11.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
-    implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.9.9'
-    implementation 'org.json:json:20210307'
+    implementation 'org.json:json:20250517'
 
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    //ROOM
-    implementation "androidx.room:room-runtime:2.6.1"
-    implementation 'androidx.room:room-ktx:2.6.1'
-    kapt "androidx.room:room-compiler:2.6.1"
-    //Supabase
-    implementation platform("io.github.jan-tennert.supabase:bom:2.0.0-rc-1")
+
+    // ROOM + KSP (required with AGP 9 built-in Kotlin)
+    def room_version = "2.8.4"
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
+
+    // Supabase
+    implementation platform("io.github.jan-tennert.supabase:bom:2.6.1")
     implementation 'io.github.jan-tennert.supabase:postgrest-kt'
-    implementation 'io.ktor:ktor-client-android:2.3.9'
-    //Billing
-    def billing_version = "6.2.0"
+    implementation 'io.ktor:ktor-client-android:2.3.12'
+
+    // Billing
+    def billing_version = "9.1.0"
     implementation "com.android.billingclient:billing-ktx:$billing_version"
-    //HTTPS
-    implementation("com.squareup.okhttp3:okhttp:4.9.0")
-    //ADS
-    implementation 'com.google.android.gms:play-services-ads:23.0.0'
 
+    // HTTPS
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
-
+    // ADS
+    implementation 'com.google.android.gms:play-services-ads:25.5.0'
 }

@@ -74,6 +74,7 @@ class HomePage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
         database = getDatabase(this)
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         date = format.format(Date()).toString()

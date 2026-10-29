@@ -19,6 +19,7 @@ class RecoveryPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRecoveryPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
 
         database = getDatabase(this)
 

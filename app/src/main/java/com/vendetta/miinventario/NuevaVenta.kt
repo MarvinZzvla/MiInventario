@@ -54,6 +54,7 @@ class NuevaVenta : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNuevaVentaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
 
         initRecycleViewNuevaVenta()
 

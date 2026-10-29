@@ -71,8 +71,6 @@ class FacturaPage : AppCompatActivity() {
     var workerThread: Thread? = null
     lateinit var readBuffer: ByteArray
     private var readBufferPosition = 0
-    private val MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN = 1
-
     private var negocio = ""
     private var phone = ""
     private var totalPrice = ""
@@ -87,15 +85,21 @@ class FacturaPage : AppCompatActivity() {
 
     private val REQUEST_CODE_PERMISSIONS = 101
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFacturaPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
 
         database = getDatabase(this)
         //Get List Of Productos from Nueva Venta Activity
-        listProductos = intent.getSerializableExtra("arrayVenta") as ArrayList<NuevaVentaDatos>
+        @Suppress("DEPRECATION", "UNCHECKED_CAST")
+        listProductos = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra("arrayVenta", ArrayList::class.java) as? ArrayList<NuevaVentaDatos>
+                ?: arrayListOf()
+        } else {
+            intent.getSerializableExtra("arrayVenta") as? ArrayList<NuevaVentaDatos> ?: arrayListOf()
+        }
         loadInfo()
 
         initAdapter()
@@ -114,42 +118,10 @@ class FacturaPage : AppCompatActivity() {
 
         binding.btnPrint.setOnClickListener {
 
-            if(btPermission){
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN)
-                        != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        // Si no tienes el permiso, solicítalo.
-                        ActivityCompat.requestPermissions(
-                            this,
-                            arrayOf(Manifest.permission.BLUETOOTH_SCAN),
-                            MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN
-                        )
-                    } else {
-                        // Si ya tienes el permiso, puedes proceder.
-                        print_inv()
-                    }
-                }else{
-                    print_inv()
-                }
-
-            }else{
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN)
-                    != PackageManager.PERMISSION_GRANTED) {
-                    // Si no tienes el permiso, solicítalo.
-                    ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.BLUETOOTH_SCAN),
-                        MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN)
-                } else {
-                    // Si ya tienes el permiso, puedes proceder.
-                    checkPermission()
-                }
-                    }else
-                {
-                    checkPermission()
-                }
-
+            if (btPermission && hasBluetoothRuntimePermissions()) {
+                print_inv()
+            } else {
+                checkPermission()
             }
         }
 
@@ -270,22 +242,11 @@ class FacturaPage : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            MY_PERMISSIONS_REQUEST_BLUETOOTH_SCAN -> {
-                // Aquí manejas la respuesta del usuario a tu solicitud de permiso de Bluetooth
-            }
-            REQUEST_CODE_PERMISSIONS -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // El permiso WRITE_EXTERNAL_STORAGE fue concedido
-                    initShare()
-                } else {
-                    // El permiso WRITE_EXTERNAL_STORAGE fue denegado
-                    Toast.makeText(this,"Permiso denegado",Toast.LENGTH_SHORT).show()
-
-                }
-            }
-            else -> {
-                // Ignora todas las demás solicitudes de permisos
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initShare()
+            } else {
+                Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -301,40 +262,55 @@ fun scanBt(view:View){
     }
     }
 
-    fun checkPermission(){
-
-        val bluetoothManager : BluetoothManager = getSystemService(BluetoothManager::class.java)
-        val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
-        if(bluetoothAdapter == null){
-            //No soporta bluetooth
-
-        }
-        else{
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-
-                bluetoothPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-            }else{
-
-                bluetoothPermissionLauncher.launch(Manifest.permission.BLUETOOTH_ADMIN)
-            }
+    private fun hasBluetoothRuntimePermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) ==
+                PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) ==
+                PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) ==
+                PackageManager.PERMISSION_GRANTED
         }
     }
+
+    fun checkPermission() {
+        val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
+        val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, "Este dispositivo no soporta Bluetooth", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            bluetoothPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN
+                )
+            )
+        } else {
+            bluetoothPermissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH_ADMIN))
+        }
+    }
+
     private val bluetoothPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ){
-        isGranted : Boolean ->
-        if(isGranted){
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants ->
+        val granted = grants.values.all { it }
+        if (granted) {
             val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
             val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
             btPermission = true
-            if(bluetoothAdapter?.isEnabled == false){
+            if (bluetoothAdapter?.isEnabled == false) {
                 val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 btActivityResultLaucher.launch(enableBtIntent)
-            }
-            else{
+            } else {
                 btScan()
-
             }
+        } else {
+            Toast.makeText(this, "Se requieren permisos de Bluetooth", Toast.LENGTH_SHORT).show()
         }
     }
 

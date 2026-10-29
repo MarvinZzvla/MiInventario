@@ -44,6 +44,7 @@ class NuevoProducto : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNuevoProductoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
         //Initialize databse
         database = getDatabase(this)
 

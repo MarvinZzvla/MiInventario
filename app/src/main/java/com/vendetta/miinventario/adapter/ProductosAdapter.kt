@@ -35,7 +35,7 @@ class ProductosAdapter(private val productoList : List<Productos>,var onItemClic
                     val filteredList = ArrayList<Productos>()
                     for (producto in productoList) {
                         // Aquí pones la condición para filtrar tus elementos. Por ejemplo, si quieres filtrar por nombre:
-                        if (producto.productoName.toLowerCase().contains(charString.toLowerCase()) ||producto.barCode.toString().startsWith(charString) ) {
+                        if (producto.productoName.lowercase().contains(charString.lowercase()) ||producto.barCode.toString().startsWith(charString) ) {
                             filteredList.add(producto)
                         }
                     }

@@ -13,12 +13,12 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.consumePurchase
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList
 import com.vendetta.miinventario.data.database.InventarioDatabase
 import com.vendetta.miinventario.data.database.entities.DataClientEntity
 import com.vendetta.miinventario.databinding.ActivitySubscriptionPageBinding
@@ -52,6 +52,7 @@ class SubscriptionPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdgeWithInsets(binding.root)
         database = InventarioDatabase.getDatabase(this)
         initTestConfig()
         initSupabase()
@@ -86,7 +87,12 @@ class SubscriptionPage : AppCompatActivity() {
 //Initialize the Billing Client to make a connection with Play Console
         billingClient = BillingClient.newBuilder(this)
             .setListener(purchasesUpdatedListener)
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts()
+                    .build()
+            )
+            .enableAutoServiceReconnection()
             .build()
 
         //When Pay button is clicked
@@ -208,7 +214,7 @@ class SubscriptionPage : AppCompatActivity() {
         val queryProductDetailsParams =
             QueryProductDetailsParams.newBuilder()
                 .setProductList(
-                    ImmutableList.of(
+                    listOf(
                         QueryProductDetailsParams.Product.newBuilder()
                             .setProductId("renovacion_mensual")
                             .setProductType(BillingClient.ProductType.INAPP)
@@ -218,10 +224,21 @@ class SubscriptionPage : AppCompatActivity() {
                 .build()
 
         billingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult,
-                                                                            productDetailsList ->
-            // check billingResult
+                                                                            productDetailsResult ->
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                Toast.makeText(
+                    this,
+                    "No se pudieron cargar productos: ${billingResult.debugMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@queryProductDetailsAsync
+            }
+            val productDetailsList = productDetailsResult.productDetailsList
+            if (productDetailsList.isNullOrEmpty()) {
+                Toast.makeText(this, "No hay productos disponibles", Toast.LENGTH_SHORT).show()
+                return@queryProductDetailsAsync
+            }
             makePayment(productDetailsList[0])
-            // process returned productDetailsList
         }
     }
 

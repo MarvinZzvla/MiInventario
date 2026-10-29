@@ -62,8 +62,8 @@ class DropdownAdapter(context: Context, private val elementos: List<VentaDropdow
                     val suggestions = ArrayList<VentaDropdown>()
                     for (elemento in elementosOriginales) {
                         // Cambia "startsWith" por "contains"
-                        if (elemento.productoName.toLowerCase()
-                                .contains(constraint.toString().toLowerCase())
+                        if (elemento.productoName.lowercase()
+                                .contains(constraint.toString().lowercase())
                         ) {
                             suggestions.add(elemento)
                         }

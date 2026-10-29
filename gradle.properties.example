@@ -1,0 +1,11 @@
+# Copy to gradle.properties and fill in real values (gradle.properties is gitignored).
+org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED
+android.useAndroidX=true
+android.nonTransitiveRClass=true
+kotlin.code.style=official
+
+SUPABASE_API_KEY=your_supabase_anon_key
+API_INVENTARIO_KEY=your_api_key
+URL_INVENTARIO=https://your-api.example.com/endpoint
+SECRET_HEADER=your_secret
+AD_ID=ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx
