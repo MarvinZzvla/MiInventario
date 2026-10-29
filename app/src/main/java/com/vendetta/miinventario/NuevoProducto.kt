@@ -72,22 +72,14 @@ class NuevoProducto : AppCompatActivity() {
                 barcode = "0"
             }
 
-            //Chequear si los campos no estan vacios
-            if(verifyFields()) {
-                //Guardar producto
-                if(isEdit){
-                   // initAds() //Disable ADS
-                    updateProducto(name, cantidad, precio, precio_venta, barcode,id)
-                }
-                else{
-                    //initAds()  //Disable ADS
-                    saveProducto(name, cantidad, precio, precio_venta, barcode)
-                }
-
+            if (!verifyFields()) {
+                Toast.makeText(this, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            else{
-                //Mostrar mensaje de Completar informacion
-                Toast.makeText(this,"Rellena todos los campos",Toast.LENGTH_SHORT).show()
+            if (isEdit) {
+                updateProducto(name, cantidad, precio, precio_venta, barcode, id)
+            } else {
+                saveProducto(name, cantidad, precio, precio_venta, barcode)
             }
 
         }
@@ -170,48 +162,91 @@ class NuevoProducto : AppCompatActivity() {
      * Esta funcion es para verificar que los campos del formulario no esten vacios
      *******************************************************************************/
     private fun verifyFields(): Boolean {
-    return !(binding.nuevoProductoNameProductoText.text.isNullOrEmpty() &&
-            binding.nuevoProductoCantidadText.text.isNullOrEmpty() &&
-            binding.nuevoProductoPrecioText.text.isNullOrEmpty() &&
-            binding.nuevoProductoPrecioVentaText.text.isNullOrEmpty())
+        return binding.nuevoProductoNameProductoText.text?.isNotBlank() == true &&
+            binding.nuevoProductoCantidadText.text?.isNotBlank() == true &&
+            binding.nuevoProductoPrecioText.text?.isNotBlank() == true &&
+            binding.nuevoProductoPrecioVentaText.text?.isNotBlank() == true
     }
+
+    private fun parseIntOrNull(raw: String): Int? =
+        raw.trim().replace(',', '.').toIntOrNull()
+            ?: raw.trim().replace(',', '.').toFloatOrNull()?.toInt()
+
+    private fun parseFloatOrNull(raw: String): Float? =
+        raw.trim().replace(',', '.').toFloatOrNull()
+
+    private fun buildProductoEntity(
+        name: String,
+        cantidad: String,
+        precio: String,
+        precioVenta: String,
+        barcode: String,
+        id: Int? = null
+    ): ProductosEntity? {
+        val available = parseIntOrNull(cantidad)
+        val price = parseFloatOrNull(precio)
+        val priceSell = parseFloatOrNull(precioVenta)
+        if (available == null || price == null || priceSell == null) {
+            Toast.makeText(
+                this,
+                "Cantidad y precios deben ser números válidos",
+                Toast.LENGTH_SHORT
+            ).show()
+            return null
+        }
+        return if (id != null) {
+            ProductosEntity(
+                ID = id,
+                Name = name.trim(),
+                Available = available,
+                Price = price,
+                Price_Sell = priceSell,
+                BarCode = barcode
+            )
+        } else {
+            ProductosEntity(
+                Name = name.trim(),
+                Available = available,
+                Price = price,
+                Price_Sell = priceSell,
+                BarCode = barcode
+            )
+        }
+    }
+
     /***************************************************************
      * Update Producto
      * Esta funcion sirve para actualizar los datos obtenidos
      * En la base de datos
      ********************************************************/
-    private fun updateProducto(name: String,
-                               cantidad: String,
-                               precio: String,
-                               precioVenta: String,
-                               barcode: String,
-                               id:String) {
-        // Theread IO
-        lifecycleScope.launch(Dispatchers.IO){
-            //Create a producto entity to update it into database, data is getting from editables
-            val producto = ProductosEntity(
-                ID = id.toInt(),
-                Name = name,
-                Available = cantidad.toInt(),
-                Price = precio.toFloat(),
-                Price_Sell =  precioVenta.toFloat(),
-                BarCode = barcode)
-            //Save result
+    private fun updateProducto(
+        name: String,
+        cantidad: String,
+        precio: String,
+        precioVenta: String,
+        barcode: String,
+        id: String
+    ) {
+        val productId = parseIntOrNull(id)
+        if (productId == null) {
+            Toast.makeText(this, "ID de producto inválido", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val producto = buildProductoEntity(name, cantidad, precio, precioVenta, barcode, productId)
+            ?: return
+
+        lifecycleScope.launch(Dispatchers.IO) {
             val result = database.productosDao.update(producto)
-            //Using the Thread Main to display results and Toasts
             withContext(Dispatchers.Main) {
                 if (result > 0) {
-                    //Desplegar con exito
                     Toast.makeText(applicationContext, "Actualizado con exito", Toast.LENGTH_SHORT)
                         .show()
                     Intent(applicationContext, HomePage::class.java).apply { startActivity(this) }
                 } else {
-                    //Failed
                     Toast.makeText(applicationContext, "Ocurrio un error", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
-
         }
     }
 
@@ -220,38 +255,26 @@ class NuevoProducto : AppCompatActivity() {
      * Esta funcion sirve para guardar los datos obtenidos
      * En la base de datos
      ********************************************************/
-    private fun saveProducto(name: String,
-                             cantidad: String,
-                             precio: String,
-                             precioVenta: String,
-                             barcode: String)
-    {
+    private fun saveProducto(
+        name: String,
+        cantidad: String,
+        precio: String,
+        precioVenta: String,
+        barcode: String
+    ) {
+        val producto = buildProductoEntity(name, cantidad, precio, precioVenta, barcode) ?: return
 
-        //Declared Variables
-        val producto = ProductosEntity(Name = name,
-            Available = cantidad.toInt(),
-            Price = precio.toFloat(),
-            Price_Sell =  precioVenta.toFloat(),
-            BarCode = barcode)
-
-
-        //Call Coroutine
         lifecycleScope.launch(Dispatchers.IO) {
-            //Insert
             val id = database.productosDao.insertAll(producto)
-            //Back to Main Scope
-            withContext(Dispatchers.Main){
-                //Display a successful message
-                if(id == -1L){
-                    //Failed
-                    Toast.makeText(applicationContext,"Fallo en el registro",Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main) {
+                if (id == -1L) {
+                    Toast.makeText(applicationContext, "Fallo en el registro", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(applicationContext, "Registrado con exito", Toast.LENGTH_SHORT)
+                        .show()
+                    Intent(applicationContext, HomePage::class.java).apply { startActivity(this) }
                 }
-                else{
-                    //Desplegar con exito
-                Toast.makeText(applicationContext,"Registrado con exito",Toast.LENGTH_SHORT).show()
-                    Intent(applicationContext,HomePage::class.java).apply { startActivity(this) }
-                }
-
             }
         }
     }

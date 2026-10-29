@@ -60,9 +60,9 @@ import java.util.concurrent.TimeUnit
 
 class HomePage : AppCompatActivity() {
     lateinit var binding : ActivityHomePageBinding
-    lateinit var listaVentas: List<Ventas>
-    private lateinit var miAdapterVentas: VentasAdapter
-    private lateinit var miAdapterProductos: ProductosAdapter
+    var listaVentas: List<Ventas> = emptyList()
+    private var miAdapterVentas: VentasAdapter? = null
+    private var miAdapterProductos: ProductosAdapter? = null
     private lateinit var database : InventarioDatabase
     private var isTesting = true
 
@@ -206,10 +206,8 @@ class HomePage : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // Este método se invoca después de que el texto ha cambiado
-                miAdapterVentas.filter.filter(s.toString())
-                miAdapterVentas.notifyDataSetChanged()
-
+                // filter() ya notifica en publishResults; no llamar notifyDataSetChanged aquí.
+                miAdapterVentas?.filter?.filter(s?.toString().orEmpty())
             }
 
         })
@@ -224,10 +222,7 @@ class HomePage : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // Este método se invoca después de que el texto ha cambiado
-                miAdapterProductos.filter.filter(s.toString())
-                miAdapterProductos.notifyDataSetChanged()
-
+                miAdapterProductos?.filter?.filter(s?.toString().orEmpty())
             }
 
         })
@@ -300,20 +295,33 @@ class HomePage : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            miAdapterProductos = ProductosAdapter(ProductosProvider().getUser(applicationContext)){onItemClickedProducto(it)}
-            recyclerView.adapter = miAdapterProductos
+            val productos = ProductosProvider().getUser(applicationContext)
+            withContext(Dispatchers.Main) {
+                val adapter = ProductosAdapter(productos) { onItemClickedProducto(it) }
+                miAdapterProductos = adapter
+                recyclerView.adapter = adapter
+                val query = binding.searchProductoText.text?.toString().orEmpty()
+                if (query.isNotEmpty()) {
+                    adapter.filter.filter(query)
+                }
+            }
         }
-
     }
 
     private fun initRecycleViewVentas() {
         val recyclerView = binding.recycleVentas
         recyclerView.layoutManager = LinearLayoutManager(this)
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.IO) {
             listaVentas = VentasProvider().getAllVentas(applicationContext)
-            miAdapterVentas = VentasAdapter(listaVentas){onItemClickedVentas(it)}
-            recyclerView.adapter = miAdapterVentas
-
+            withContext(Dispatchers.Main) {
+                val adapter = VentasAdapter(listaVentas) { onItemClickedVentas(it) }
+                miAdapterVentas = adapter
+                recyclerView.adapter = adapter
+                val query = binding.searchVentaText.text?.toString().orEmpty()
+                if (query.isNotEmpty()) {
+                    adapter.filter.filter(query)
+                }
+            }
         }
     }
 

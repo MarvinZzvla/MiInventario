@@ -8,49 +8,48 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vendetta.miinventario.R
 import com.vendetta.miinventario.data.Productos
 
-class ProductosAdapter(private val productoList : List<Productos>,var onItemClickedProducto:(Productos)-> Unit)
-    : RecyclerView.Adapter<ProductosViewHolder>(),Filterable {
-    var listaFiltrada = productoList
+class ProductosAdapter(
+    private val productoList: List<Productos>,
+    var onItemClickedProducto: (Productos) -> Unit
+) : RecyclerView.Adapter<ProductosViewHolder>(), Filterable {
+
+    private var listaFiltrada: List<Productos> = productoList.toList()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductosViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return ProductosViewHolder(layoutInflater.inflate(R.layout.item_productos,parent,false))
+        return ProductosViewHolder(layoutInflater.inflate(R.layout.item_productos, parent, false))
     }
 
-    override fun getItemCount(): Int {
-    return listaFiltrada.size
-    }
-
+    override fun getItemCount(): Int = listaFiltrada.size
 
     override fun onBindViewHolder(holder: ProductosViewHolder, position: Int) {
-        val item =listaFiltrada[position]
-        holder.render(item,onItemClickedProducto)
+        val item = listaFiltrada[position]
+        holder.render(item, onItemClickedProducto)
     }
+
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val charString = constraint.toString()
-                listaFiltrada = if (charString.isEmpty()) {
+                val charString = constraint?.toString().orEmpty()
+                val filtered = if (charString.isEmpty()) {
                     productoList
                 } else {
-                    val filteredList = ArrayList<Productos>()
-                    for (producto in productoList) {
-                        // Aquí pones la condición para filtrar tus elementos. Por ejemplo, si quieres filtrar por nombre:
-                        if (producto.productoName.lowercase().contains(charString.lowercase()) ||producto.barCode.toString().startsWith(charString) ) {
-                            filteredList.add(producto)
-                        }
+                    productoList.filter { producto ->
+                        producto.productoName.lowercase().contains(charString.lowercase()) ||
+                            producto.barCode.toString().startsWith(charString)
                     }
-                    filteredList
                 }
-                val filterResults = FilterResults()
-                filterResults.values = listaFiltrada
-                return filterResults
+                return FilterResults().apply {
+                    values = filtered
+                    count = filtered.size
+                }
             }
 
+            @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                listaFiltrada = results?.values as List<Productos>
+                listaFiltrada = (results?.values as? List<Productos>) ?: emptyList()
                 notifyDataSetChanged()
             }
         }
     }
-
 }
